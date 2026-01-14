@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  /* Brand Colors - Primary */
+  --color-primary: #00ccf0;
+  --color-primary-hover: #00bfe0;
+  --color-primary-alt: #13ec13;
+  --color-primary-alt-hover: #10d610;
+  
+  /* Brand Colors - Accent */
+  --color-brand-red: #ff4d2e;
+  --color-brand-red-hover: #e6452a;
+  --color-brand-yellow: #ffd500;
+  --color-brand-yellow-alt: #ffd41c;
+  
+  /* Background Colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9f9f9;
+  --color-bg-tertiary: #f6f8f6;
+  --color-bg-quaternary: #f8f6f5;
+  
+  /* Text Colors */
+  --color-text-primary: #101718;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #60848a;
+  --color-text-quaternary: #618961;
+  
+  /* Surface Colors (Cards, Panels) */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  
+  /* Border Colors */
+  --color-border-light: #e5e7eb;
+  --color-border-lighter: #f0f4f0;
+  --color-border-lightest: #dbe6db;
+  
+  /* State Colors */
+  --color-success: #13ec13;
+  --color-info: #00ccf0;
+  --color-warning: #ffd500;
+  --color-error: #ff4d2e;
+  
+  /* Font Families */
+  --font-display: Inter, sans-serif;
+  --font-heading: Poppins, sans-serif;
+  --font-manrope: Manrope, sans-serif;
+  --font-lexend: Lexend, sans-serif;
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+  
+  /* Border Radius */
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
 }
