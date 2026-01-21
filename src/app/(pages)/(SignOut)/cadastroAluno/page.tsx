@@ -56,7 +56,7 @@ export default function CadastroAluno() {
             modal.success(
                 "Conta criada com sucesso!",
                 "Sua conta foi criada. Agora você pode fazer login e começar a aprender.",
-                () => router.push("/pagamento")
+                () => router.push("/pagamento?userId=" + response.data.usuarioId)
             );
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message || "Ocorreu um erro ao criar sua conta. Tente novamente.";
@@ -173,13 +173,6 @@ export default function CadastroAluno() {
                     Entrar
                 </a>
             </p>
-        </div>
-        
-        {/* Footer links */}
-        <div className="mt-6 flex gap-6 text-sm text-text-secondary">
-            <a href="#" className="hover:text-primary transition-colors">Ajuda</a>
-            <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
-            <a href="#" className="hover:text-primary transition-colors">Termos</a>
         </div>
 
         {/* Modal */}

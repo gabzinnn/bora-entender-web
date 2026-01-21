@@ -2,57 +2,26 @@
 
 import { Modal, useModal } from "@/app/components/Modals/Modal";
 import { OrderSummary } from "@/app/components/Pagamento/OrderSummary";
-import { CardData, PaymentForm } from "@/app/components/Pagamento/PaymentForm";
+import { PaymentForm } from "@/app/components/Pagamento/PaymentForm";
 import { Plan } from "@/app/components/Pagamento/PlanCard";
 import { PlanSelector } from "@/app/components/Pagamento/PlanSelector";
 import { PixData } from "@/app/components/Pagamento/PixPayment";
 import api from "@/services/axios";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 
-// ==========================================
-// PLACEHOLDER DATA - Substituir pela API depois
-// ==========================================
-const PLACEHOLDER_PLANS: Plan[] = [
-  {
-    id: 1,
-    nome: "Plano Mensal",
-    preco: 2990, // R$ 29,90
-    stripePriceId: "price_monthly_placeholder",
-    periodo: "mensal",
-    allowPix: false, // ❌ PIX não disponível para mensal
-    beneficios: [
-      "Acesso ilimitado a todos os cursos",
-      "Certificado de conclusão digital",
-      "Suporte prioritário na comunidade",
-      "Download de materiais em PDF",
-    ],
-  },
-  {
-    id: 2,
-    nome: "Plano Anual",
-    preco: 24990, // R$ 249,90
-    stripePriceId: "price_annual_placeholder",
-    periodo: "anual",
-    popular: true,
-    allowPix: true, // ✅ PIX disponível para anual
-    beneficios: [
-      "Todos os benefícios do mensal",
-      "Economia de 30% (equivale a R$ 20,83/mês)",
-      "Acesso antecipado a novos cursos",
-      "Mentoria mensal em grupo",
-      "Desconto em eventos exclusivos",
-    ],
-  },
-];
-
 export default function PagamentoPage() {
-  const [plans, setPlans] = useState<Plan[]>(PLACEHOLDER_PLANS);
+  const params = useSearchParams();
+  const userId = params.get("userId");
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [pixData, setPixData] = useState<PixData | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [setupIntentClientSecret, setSetupIntentClientSecret] = useState<string | null>(null);
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const router = useRouter();
   const modal = useModal();
 
@@ -60,12 +29,9 @@ export default function PagamentoPage() {
   useEffect(() => {
     async function fetchPlans() {
       try {
-        // const response = await api.get("/planos");
-        // setPlans(response.data);
-        
-        setPlans(PLACEHOLDER_PLANS);
-        
-        const popularPlan = PLACEHOLDER_PLANS.find((p) => p.popular);
+        const response = await api.get("/plano");
+        setPlans(response.data);
+        const popularPlan = response.data.find((p: Plan) => p.popular);
         if (popularPlan) {
           setSelectedPlan(popularPlan);
         }
@@ -82,30 +48,53 @@ export default function PagamentoPage() {
     setPixData(null);
   }, [selectedPlan?.id]);
 
-  // ==========================================
-  // PAGAMENTO COM CARTÃO
-  // ==========================================
-  async function handleCardPayment(cardData: CardData) {
-    if (!selectedPlan) return;
+  useEffect(() => {
+    async function createPaymentIntent() {
+      if (!selectedPlan || !userId) {
+        setSetupIntentClientSecret(null);
+        setSubscriptionId(null);
+        return;
+      }
 
+      try {
+        const response = await api.post("/pagamento/criar-intent", {
+          planoId: selectedPlan.id,
+          priceId: selectedPlan.stripePriceId,
+          userId: Number(userId),
+        });
+        
+        // Agora recebe 2 valores
+        setSetupIntentClientSecret(response.data.setupIntentClientSecret);
+        setSubscriptionId(response.data.subscriptionId);
+      } catch (error) {
+        console.error("Erro ao criar payment intent:", error);
+      }
+    }
+
+    createPaymentIntent();
+  }, [selectedPlan?.id, userId]);
+
+  // Novo handler: quando o cartão for salvo, confirma a assinatura
+  const handleCardConfirm = useCallback(async (paymentMethodId: string) => {
+    if (!subscriptionId) return;
     setIsLoading(true);
     try {
-      const response = await api.post("/pagamento/criar-checkout", {
-        planoId: selectedPlan.id,
-        stripePriceId: selectedPlan.stripePriceId,
+      await api.post("/pagamento/confirmar-assinatura", {
+        subscriptionId,
+        paymentMethodId,
       });
 
-      // Redirecionar para Stripe Checkout
-      window.location.href = response.data.url;
+      modal.success(
+        "Pagamento confirmado!",
+        "Sua assinatura foi ativada com sucesso!",
+        () => router.push("/login")
+      );
     } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        "Ocorreu um erro ao processar o pagamento.";
-      modal.error("Erro no pagamento", errorMessage);
+      modal.error("Erro", error?.response?.data?.message || "Erro ao confirmar pagamento");
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [subscriptionId, modal, router]);
 
   // ==========================================
   // PAGAMENTO COM PIX
@@ -118,6 +107,7 @@ export default function PagamentoPage() {
       const response = await api.post("/pagamento/criar-pix", {
         planoId: selectedPlan.id,
         valor: selectedPlan.preco,
+        userId: Number(userId),
       });
 
       setPixData({
@@ -165,7 +155,21 @@ export default function PagamentoPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+  // Handler para quando o Stripe confirma o pagamento com sucesso
+  const handlePaymentSuccess = useCallback(() => {
+    modal.success(
+      "Pagamento confirmado!",
+      "Sua assinatura foi ativada com sucesso. Aproveite todos os conteúdos!",
+      () => router.push("/dashboard")
+    );
+  }, [modal, router]);
+
+  // Handler para erros vindos do Stripe Elements
+  const handlePaymentError = useCallback((message: string) => {
+    modal.error("Erro no pagamento", message);
+  }, [modal]);
 
   return (
     <div className="min-h-screen bg-bg-secondary">
@@ -199,8 +203,11 @@ export default function PagamentoPage() {
 
             <PaymentForm
               plan={selectedPlan}
+              setupIntentClientSecret={setupIntentClientSecret}
+              subscriptionId={subscriptionId}
               isLoading={isLoading}
-              onSubmitCard={handleCardPayment}
+              onCardConfirm={handleCardConfirm}
+              onError={handlePaymentError}
               onGeneratePix={handleGeneratePix}
               onCheckPixPayment={handleCheckPixPayment}
               pixData={pixData}

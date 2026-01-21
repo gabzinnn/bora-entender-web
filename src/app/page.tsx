@@ -76,7 +76,7 @@ function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-3 sm:gap-4">
-          <a className="text-text-primary font-bold text-sm hover:text-primary transition-colors" href="#">
+          <a className="text-text-primary font-bold text-sm hover:text-primary transition-colors" href="/login">
             Login
           </a>
           <Botao variant="secondary" size="sm" onClick={() => router.push("/cadastroAluno")}>

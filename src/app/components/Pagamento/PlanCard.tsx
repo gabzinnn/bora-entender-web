@@ -11,7 +11,7 @@ export interface Plan {
   beneficios: string[];
   periodo?: "mensal" | "anual";
   popular?: boolean;
-  allowPix?: boolean; // 👈 Novo: indica se permite PIX
+  allowPix?: boolean;
 }
 
 interface PlanCardProps {
@@ -48,7 +48,7 @@ export function PlanCard({ plan, selected, onSelect }: PlanCardProps) {
       )}
 
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-4 mt-4">
         <div>
           <h3 className="text-text-primary text-lg font-bold">{plan.nome}</h3>
           <p className="text-text-secondary text-sm">
