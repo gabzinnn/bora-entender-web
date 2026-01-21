@@ -9,17 +9,16 @@ import { PixData } from "@/app/components/Pagamento/PixPayment";
 import api from "@/services/axios";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useCallback, Suspense } from "react";
 
-export default function PagamentoPage() {
+function PagamentoContent() {
   const params = useSearchParams();
   const userId = params.get("userId");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [pixData, setPixData] = useState<PixData | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [setupIntentClientSecret, setSetupIntentClientSecret] = useState<string | null>(null);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const router = useRouter();
@@ -63,7 +62,6 @@ export default function PagamentoPage() {
           userId: Number(userId),
         });
         
-        // Agora recebe 2 valores
         setSetupIntentClientSecret(response.data.setupIntentClientSecret);
         setSubscriptionId(response.data.subscriptionId);
       } catch (error) {
@@ -74,7 +72,6 @@ export default function PagamentoPage() {
     createPaymentIntent();
   }, [selectedPlan?.id, userId]);
 
-  // Novo handler: quando o cartão for salvo, confirma a assinatura
   const handleCardConfirm = useCallback(async (paymentMethodId: string) => {
     if (!subscriptionId) return;
     setIsLoading(true);
@@ -96,9 +93,6 @@ export default function PagamentoPage() {
     }
   }, [subscriptionId, modal, router]);
 
-  // ==========================================
-  // PAGAMENTO COM PIX
-  // ==========================================
   async function handleGeneratePix() {
     if (!selectedPlan) return;
 
@@ -157,16 +151,6 @@ export default function PagamentoPage() {
     }
   };
 
-  // Handler para quando o Stripe confirma o pagamento com sucesso
-  const handlePaymentSuccess = useCallback(() => {
-    modal.success(
-      "Pagamento confirmado!",
-      "Sua assinatura foi ativada com sucesso. Aproveite todos os conteúdos!",
-      () => router.push("/dashboard")
-    );
-  }, [modal, router]);
-
-  // Handler para erros vindos do Stripe Elements
   const handlePaymentError = useCallback((message: string) => {
     modal.error("Erro no pagamento", message);
   }, [modal]);
@@ -235,5 +219,17 @@ export default function PagamentoPage() {
         secondaryButton={modal.options.secondaryButton}
       />
     </div>
+  );
+}
+
+export default function PagamentoPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <PagamentoContent />
+    </Suspense>
   );
 }
