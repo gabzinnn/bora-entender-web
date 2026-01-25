@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback, Suspense } from "react";
+import Logo from "@/app/components/Logo";
 
 function PagamentoContent() {
   const params = useSearchParams();
@@ -160,12 +161,7 @@ function PagamentoContent() {
       {/* Header */}
       <nav className="w-full flex justify-center py-6 sm:py-8 bg-white border-b border-border-lighter">
         <Link href="/" className="flex items-center gap-3">
-          <Image
-            src="/assets/images/logoCompleto.png"
-            alt="Bora Entender Logo"
-            width={140}
-            height={60}
-          />
+          <Logo size="xl" variant="completo" />
         </Link>
       </nav>
 

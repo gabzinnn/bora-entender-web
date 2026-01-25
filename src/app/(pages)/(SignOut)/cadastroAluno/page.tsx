@@ -2,6 +2,7 @@
 import { Botao } from "@/app/components/Botao";
 import { Dropdown, type DropdownOption } from "@/app/components/Dropdown";
 import { Input } from "@/app/components/Input";
+import Logo from "@/app/components/Logo";
 import { Modal, useModal } from "@/app/components/Modals/Modal";
 import api from "@/services/axios";
 import { Formik } from "formik";
@@ -68,13 +69,7 @@ export default function CadastroAluno() {
 
     return (
       <div className="w-full min-h-screen bg-bg-secondary items-center justify-center flex flex-col p-4">
-        <Image
-            src="/assets/images/logoCompleto.png"
-            alt="Bora Entender Logo"
-            width={200}
-            height={100}
-            className="mb-6"
-        />
+        <Logo size="xxl" variant="completo" className="mb-6" />
         <div className="bg-white w-full max-w-md md:max-w-lg flex flex-col gap-2 px-6 py-6 sm:px-8 sm:py-8 items-center shadow-md rounded-lg">
             <h1 className="text-xl sm:text-2xl font-bold text-center mb-2">Crie sua conta!</h1>
             <h3 className="text-sm sm:text-md font-medium text-text-secondary text-center">Bem-vindo ao Bora Entender!</h3>

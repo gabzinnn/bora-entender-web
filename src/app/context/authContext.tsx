@@ -12,7 +12,7 @@ import React, {
 
 interface AuthContextData {
     signIn: (token:string, user: Usuario) => void;
-    signOut: unknown;
+    signOut: () => void;
     token: string;
     user: Usuario;
     loading: boolean;
