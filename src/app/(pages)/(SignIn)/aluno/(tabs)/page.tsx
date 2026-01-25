@@ -66,19 +66,19 @@ export default function HomeAluno() {
     return (
         <main className="w-full min-h-screen h-full flex flex-col p-8">
             {/* Header com saudação e informações do aluno */}
-            <div className="w-full flex flex-row mb-8 items-center">
+            <div className="w-full flex flex-col md:flex-row mb-8 items-center">
                 <Logo size="lg" variant="icone"  />
                 <div className="flex flex-col ml-6">
                     <h1 className="text-4xl font-black mb-2 text-text-primary">Olá, {data?.aluno.nome.split(' ')[0] || 'Aluno'}!</h1>
                     <h3 className="text-xl text-text-tertiary">Pronto para dominar os estudos hoje?</h3>
                 </div>
-                <div className="relative ml-auto">
+                <div className="relative ml-auto md:w-auto w-full">
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
-                        className="flex flex-row items-center justify-between border-border-light border rounded-full px-6 py-2 shadow-md bg-white hover:shadow-lg transition-shadow cursor-pointer"
+                        className="flex flex-row items-center justify-between border-border-light border rounded-full px-6 py-2 shadow-md bg-white hover:shadow-lg transition-shadow cursor-pointer w-full md:w-auto mt-4 md:mt-0"
                     >
-                        <div className="flex flex-col">
-                            <span className="text-md font-semibold text-text-primary">{data?.aluno.nome}</span>
+                        <div className="flex flex-col w-full">
+                            <span className="text-md font-semibold text-text-primary ml-auto">{data?.aluno.nome}</span>
                             <span className="text-sm font-medium text-text-tertiary ml-auto">{data?.aluno.anoEscolar}º ano</span>
                         </div>
                         <Image
