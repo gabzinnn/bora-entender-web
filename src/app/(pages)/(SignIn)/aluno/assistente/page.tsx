@@ -3,8 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import HeaderAluno from '@/app/components/HeaderAluno';
-import { Send, Bot, User, Loader2, Plus, MessageSquare, Trash2, Menu, X } from 'lucide-react';
+import { Send, Bot, User, Loader2, Plus, MessageSquare, Trash2, Menu, X, ArrowLeft } from 'lucide-react';
 import api from '@/services/axios';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 interface Mensagem {
     id: number;
@@ -27,9 +29,38 @@ interface Chat {
     ultimaAtividade: string;
 }
 
-// Função para converter Markdown em HTML
+// Função para converter Markdown em HTML com suporte a LaTeX
 function parseMarkdown(texto: string): string {
-    return texto
+    // Primeiro, processa as expressões LaTeX para evitar conflitos com Markdown
+    let resultado = texto;
+    
+    // Expressões LaTeX em bloco: $$...$$
+    resultado = resultado.replace(/\$\$([\s\S]*?)\$\$/g, (_, latex) => {
+        try {
+            return `<div class="my-3 overflow-x-auto">${katex.renderToString(latex.trim(), { 
+                displayMode: true,
+                throwOnError: false 
+            })}</div>`;
+        } catch {
+            return `<code class="text-red-500">${latex}</code>`;
+        }
+    });
+    
+    // Expressões LaTeX inline: $...$
+    resultado = resultado.replace(/\$([^\$\n]+?)\$/g, (_, latex) => {
+        try {
+            return katex.renderToString(latex.trim(), { 
+                displayMode: false,
+                throwOnError: false 
+            });
+        } catch {
+            return `<code class="text-red-500">${latex}</code>`;
+        }
+    });
+
+    // Agora aplica o parsing de Markdown normal
+    return resultado
+        .replace(/^#### (.*$)/gim, '<h4 class="text-sm font-bold text-gray-900 mt-3 mb-1.5">$1</h4>')
         .replace(/^### (.*$)/gim, '<h3 class="text-base font-bold text-gray-900 mt-4 mb-2">$1</h3>')
         .replace(/^## (.*$)/gim, '<h2 class="text-lg font-bold text-gray-900 mt-4 mb-2">$1</h2>')
         .replace(/^# (.*$)/gim, '<h1 class="text-xl font-bold text-gray-900 mt-4 mb-2">$1</h1>')
@@ -70,16 +101,23 @@ export default function AssistentePage() {
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingChats, setIsLoadingChats] = useState(true);
-    const [sidebarOpen, setSidebarOpen] = useState(false); // Fechado por padrão em mobile
+    const [isLoadingMensagens, setIsLoadingMensagens] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [shouldScroll, setShouldScroll] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Só faz scroll quando shouldScroll for true (nova mensagem enviada)
     useEffect(() => {
-        scrollToBottom();
-    }, [mensagens]);
+        if (shouldScroll) {
+            scrollToBottom();
+            setShouldScroll(false);
+        }
+    }, [mensagens, shouldScroll]);
 
     // Carrega lista de chats
     useEffect(() => {
@@ -115,11 +153,20 @@ export default function AssistentePage() {
     };
 
     const carregarChat = async (chatId: number) => {
+        setIsLoadingMensagens(true);
         try {
             const response = await api.get(`/ia/chats/${chatId}`);
             setMensagens(response.data.mensagens);
+            // Aguarda o render e depois faz scroll para o final sem animação
+            setTimeout(() => {
+                if (messagesContainerRef.current) {
+                    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+                }
+            }, 100);
         } catch (error) {
             console.error('Erro ao carregar chat:', error);
+        } finally {
+            setIsLoadingMensagens(false);
         }
     };
 
@@ -156,6 +203,7 @@ export default function AssistentePage() {
         const perguntaTexto = inputValue;
         setInputValue('');
         setIsLoading(true);
+        setShouldScroll(true); // Ativa scroll suave para nova mensagem
 
         const mensagemUsuario: Mensagem = {
             id: Date.now(),
@@ -188,6 +236,7 @@ export default function AssistentePage() {
                 createdAt: new Date().toISOString(),
             };
             setMensagens(prev => [...prev, mensagemIA]);
+            setShouldScroll(true); // Ativa scroll suave para resposta da IA
 
         } catch (error) {
             const erroMensagem: Mensagem = {
@@ -197,6 +246,7 @@ export default function AssistentePage() {
                 createdAt: new Date().toISOString(),
             };
             setMensagens(prev => [...prev, erroMensagem]);
+            setShouldScroll(true);
         } finally {
             setIsLoading(false);
         }
@@ -210,10 +260,12 @@ export default function AssistentePage() {
     };
 
     return (
-        <main className="w-full min-h-screen h-screen flex flex-col">
-            <HeaderAluno />
+        <main className="w-full h-screen flex flex-col overflow-hidden">
+            <div className="shrink-0">
+                <HeaderAluno />
+            </div>
             
-            <div className="flex-1 flex max-h-[calc(100vh-64px)] relative">
+            <div className="flex-1 flex overflow-hidden relative">
                 {/* Overlay para mobile */}
                 {sidebarOpen && (
                     <div 
@@ -226,12 +278,12 @@ export default function AssistentePage() {
                 <aside className={`
                     fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto
                     w-70 sm:w-72 bg-white border-r border-gray-200 
-                    flex flex-col transition-transform duration-300 ease-in-out
+                    flex flex-col h-full transition-transform duration-300 ease-in-out
                     ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                     lg:top-0 top-16
                 `}>
                     {/* Header da Sidebar - Mobile */}
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200 lg:hidden">
+                    <div className="flex items-center justify-between p-4 border-b border-gray-200 lg:hidden shrink-0">
                         <h2 className="font-semibold text-gray-900">Conversas</h2>
                         <button
                             onClick={() => setSidebarOpen(false)}
@@ -241,7 +293,7 @@ export default function AssistentePage() {
                         </button>
                     </div>
 
-                    <div className="p-3 sm:p-4 border-b border-gray-200 lg:border-t-0">
+                    <div className="p-3 sm:p-4 border-b border-gray-200 lg:border-t-0 shrink-0">
                         <button
                             onClick={criarNovoChat}
                             className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-xl transition-colors text-sm sm:text-base"
@@ -302,9 +354,17 @@ export default function AssistentePage() {
                 </aside>
 
                 {/* Área principal do chat */}
-                <div className="flex-1 bg-bg-secondary flex flex-col min-w-0">
+                <div className="flex-1 bg-bg-secondary flex flex-col min-w-0 h-full overflow-hidden">
                     {/* Header do Chat */}
-                    <div className="bg-white border-b border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
+                    <div className="bg-white border-b border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3 shrik-0">
+                        {/* Botão Voltar */}
+                        <button
+                            onClick={() => router.back()}
+                            className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                            aria-label="Voltar"
+                        >
+                            <ArrowLeft size={20} className="text-gray-600" />
+                        </button>
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
@@ -324,8 +384,15 @@ export default function AssistentePage() {
                     </div>
 
                     {/* Mensagens */}
-                    <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 space-y-3 sm:space-y-4">
-                        {mensagens.length === 0 && (
+                    <div 
+                        ref={messagesContainerRef}
+                        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 space-y-3 sm:space-y-4"
+                    >
+                        {isLoadingMensagens ? (
+                            <div className="flex justify-center items-center h-full">
+                                <Loader2 className="animate-spin text-primary" size={32} />
+                            </div>
+                        ) : mensagens.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-center px-4">
                                 <div className="size-12 sm:size-16 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4">
                                     <Bot className="text-primary w-6 h-6 sm:w-8 sm:h-8" />
@@ -354,9 +421,9 @@ export default function AssistentePage() {
                                     ))}
                                 </div>
                             </div>
-                        )}
-
-                        {mensagens.map((msg) => (
+                        ) : (
+                            <>
+                                {mensagens.map((msg) => (
                             <div
                                 key={msg.id}
                                 className={`flex gap-2 sm:gap-3 ${msg.tipo === 'USUARIO' ? 'justify-end' : 'justify-start'}`}
@@ -399,11 +466,13 @@ export default function AssistentePage() {
                             </div>
                         )}
                         
-                        <div ref={messagesEndRef} />
+                                <div ref={messagesEndRef} />
+                            </>
+                        )}
                     </div>
 
                     {/* Input */}
-                    <div className="bg-white border-t border-gray-200 p-2.5 sm:p-4">
+                    <div className="bg-white border-t border-gray-200 p-2.5 sm:p-4 shrink-0">
                         <div className="flex items-center gap-2 sm:gap-3 max-w-4xl mx-auto">
                             <input
                                 type="text"
@@ -417,7 +486,7 @@ export default function AssistentePage() {
                             <button
                                 onClick={enviarPergunta}
                                 disabled={isLoading || !inputValue.trim()}
-                                className="size-10 sm:size-12 bg-primary hover:bg-primary/90 disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl flex items-center justify-center transition-colors shrink-0"
+                                className="size-10 sm:size-12 bg-primary hover:bg-primary/90 disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl flex items-center justify-center transition-colors shrink-0 cursor-pointer"
                             >
                                 <Send size={18} className="sm:w-5 sm:h-5" />
                             </button>
