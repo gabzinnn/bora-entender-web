@@ -108,14 +108,22 @@ export default function AssistentePage() {
     const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     };
 
     // Só faz scroll quando shouldScroll for true (nova mensagem enviada)
     useEffect(() => {
         if (shouldScroll) {
-            scrollToBottom();
-            setShouldScroll(false);
+            // Pequeno delay para garantir que o DOM foi atualizado
+            setTimeout(() => {
+                scrollToBottom();
+                setShouldScroll(false);
+            }, 50);
         }
     }, [mensagens, shouldScroll]);
 

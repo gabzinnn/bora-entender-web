@@ -1,14 +1,12 @@
 'use client';
 import AvatarAluno from "@/app/components/AvatarAluno";
 import CardMateria from "@/app/components/CardMateria";
-import LoadingScreen from "@/app/components/LoadingScreen";
 import Logo from "@/app/components/Logo";
-import { useAuth } from "@/app/context/authContext";
+import HomeAlunoSkeleton from "@/app/components/Skeleton/HomeAlunoSkeleton";
 import { useHomeAluno } from "@/hooks/useHomeAluno";
-import { CircleCheckBig, Clock, Flame, LogOut, User } from "lucide-react";
-import Image from "next/image";
+import { CircleCheckBig, Clock, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 
 interface CardStatProps {
     cor: string;
@@ -42,12 +40,10 @@ function CardStat({ cor, icone, titulo, valor }: CardStatProps) {
 export default function HomeAluno() {
     const { data, error, isLoading } = useHomeAluno();
     const router = useRouter();
-    const [menuOpen, setMenuOpen] = useState(false);
-    const { signOut } = useAuth();
 
     if (isLoading) {
         return (
-            <LoadingScreen />
+            <HomeAlunoSkeleton />
         )
     }
 
@@ -58,11 +54,6 @@ export default function HomeAluno() {
             </main>
         )
     }
-
-    const handleViewProfile = () => {
-        router.push('/aluno/perfil');
-        setMenuOpen(false);
-    };
 
     return (
         <main className="w-full min-h-screen h-full flex flex-col p-8">

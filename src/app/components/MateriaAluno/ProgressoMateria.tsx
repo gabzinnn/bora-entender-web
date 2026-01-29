@@ -3,7 +3,6 @@ interface ProgressoMateriaProps {
     modulosConcluidos: number;
     modulosTotais: number;
     horasEstudadas: number;
-    xpGanho: number;
     cor: string;
 }
 
@@ -12,7 +11,6 @@ export default function ProgressoMateria({
     modulosConcluidos,
     modulosTotais,
     horasEstudadas,
-    xpGanho,
     cor
 }: ProgressoMateriaProps) {
     return (
@@ -35,10 +33,6 @@ export default function ProgressoMateria({
                 <div className="text-center">
                     <span className="block font-bold text-xl sm:text-2xl text-gray-900">{horasEstudadas}h</span>
                     <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wide">Estudadas</span>
-                </div>
-                <div className="text-center">
-                    <span className="block font-bold text-xl sm:text-2xl text-gray-900">{xpGanho}</span>
-                    <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wide">XP</span>
                 </div>
             </div>
         </div>
