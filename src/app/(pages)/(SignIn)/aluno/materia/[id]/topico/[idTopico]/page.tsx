@@ -4,230 +4,204 @@ import AjudaCard from "@/app/components/MateriaAluno/AjudaCard";
 import TopicoSkeleton from "@/app/components/Skeleton/TopicoSkeleton";
 import ContentViewer from "@/app/components/TopicoAluno/ContentViewer";
 import ListaConteudos from "@/app/components/TopicoAluno/ListaConteudos";
+import NavegacaoConteudo from "@/app/components/TopicoAluno/NavegacaoConteudo";
 import NotasCard from "@/app/components/TopicoAluno/NotasCard";
 import PDFContent from "@/app/components/TopicoAluno/PDFContent";
 import QuizContent from "@/app/components/TopicoAluno/QuizContent";
+import ResumoConteudo from "@/app/components/TopicoAluno/ResumoConteudo";
 import TextoContent from "@/app/components/TopicoAluno/TextoContent";
 import VideoContent from "@/app/components/TopicoAluno/VideoContent";
 import ProgressoTopico from "@/app/components/TopicoAluno/ProgressoTopico";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, VideoOff, FileX, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useConcluirQuiz, useConteudo, useMarcarConteudoConcluido, useTopicoAluno, type TipoConteudo } from "@/hooks/useTopicoAluno";
+import { useAuth } from "@/app/context/authContext";
+import ConteudoSkeleton from "@/app/components/Skeleton/ConteudoSkeleton";
 
-// Dados mockados para demonstração
-const mockTopico = {
-    id: 1,
-    moduloNumero: "Módulo 01",
-    titulo: "O Começo de Tudo",
-    cor: "#0cc3e4",
-    materiaNome: "História Geral",
-    materiaId: 1,
-    progresso: {
-        percentual: 35,
-        atividadesConcluidas: 3,
-        atividadesTotais: 8
-    },
-    conteudos: [
-        { id: 1, titulo: "Vídeo: Boas Vindas", tipo: "VIDEO" as const, duracao: "02:30 min", status: "concluido" as const },
-        { id: 2, titulo: "Guia de Estudos - Cap. 1", tipo: "PDF" as const, duracao: "15 min leitura", status: "atual" as const },
-        { id: 3, titulo: "Resumo do Capítulo", tipo: "TEXTO" as const, duracao: "5 min leitura", status: "bloqueado" as const },
-        { id: 4, titulo: "Vídeo: Aprofundando o tema", tipo: "VIDEO" as const, duracao: "12:45 min", status: "bloqueado" as const },
-        { id: 5, titulo: "Quiz: Teste seus conhecimentos", tipo: "QUIZ" as const, questoes: 5, status: "bloqueado" as const },
-    ],
-    conteudoAtual: {
-        id: 2,
-        titulo: "Guia de Estudos - Cap. 1",
-        tipo: "QUIZ" as const,
-        paginaAtual: 1,
-        totalPaginas: 5,
-        concluido: false
-    } as { id: number; titulo: string; tipo: "VIDEO" | "PDF" | "TEXTO" | "QUIZ"; paginaAtual: number; totalPaginas: number; concluido: boolean }
-};
+interface NotFoundComponentProps {
+    corMateria: string;
+    icone: React.ReactNode;
+    conteudoTipo: "PDF" | "vídeo" | "texto" | "quiz";
+}
 
-// Mock de questões para o Quiz
-const mockQuestoes = [
-    {
-        id: 1,
-        enunciado: "Qual foi a principal característica do período da história antiga?",
-        alternativas: [
-            { 
-                id: 1, 
-                texto: "Surgimento das primeiras civilizações e da escrita", 
-                correta: true,
-                justificativa: "Correto! O período da história antiga é marcado especialmente pelo surgimento da escrita (por volta de 4000 a.C.), que permitiu o registro de informações e o desenvolvimento das primeiras civilizações organizadas."
-            },
-            { 
-                id: 2, 
-                texto: "Descoberta da América", 
-                correta: false,
-                justificativa: "Incorreto. A descoberta da América ocorreu em 1492, marcando o início da Era Moderna, não da Antiguidade."
-            },
-            { 
-                id: 3, 
-                texto: "Revolução Industrial", 
-                correta: false,
-                justificativa: "Incorreto. A Revolução Industrial iniciou no século XVIII, na Idade Contemporânea, muito depois da Antiguidade."
-            },
-            { 
-                id: 4, 
-                texto: "Primeira Guerra Mundial", 
-                correta: false,
-                justificativa: "Incorreto. A Primeira Guerra Mundial ocorreu entre 1914-1918, na Idade Contemporânea."
-            },
-        ]
-    },
-    {
-        id: 2,
-        enunciado: "Em qual região surgiu a escrita cuneiforme?",
-        alternativas: [
-            { 
-                id: 5, 
-                texto: "Egito", 
-                correta: false,
-                justificativa: "Incorreto. No Egito surgiu a escrita hieroglífica, não a cuneiforme."
-            },
-            { 
-                id: 6, 
-                texto: "Mesopotâmia", 
-                correta: true,
-                justificativa: "Correto! A escrita cuneiforme foi desenvolvida pelos sumérios na Mesopotâmia (atual Iraque), por volta de 3500 a.C., sendo uma das primeiras formas de escrita da humanidade."
-            },
-            { 
-                id: 7, 
-                texto: "China", 
-                correta: false,
-                justificativa: "Incorreto. Na China desenvolveu-se a escrita chinesa, baseada em ideogramas, diferente da cuneiforme."
-            },
-            { 
-                id: 8, 
-                texto: "Grécia", 
-                correta: false,
-                justificativa: "Incorreto. Na Grécia surgiu o alfabeto grego, derivado do fenício, não a escrita cuneiforme."
-            },
-        ]
-    },
-    {
-        id: 3,
-        enunciado: "Quando ocorreu a queda do Império Romano do Ocidente?",
-        alternativas: [
-            { 
-                id: 9, 
-                texto: "27 a.C.", 
-                correta: false,
-                justificativa: "Incorreto. Em 27 a.C. Otávio recebeu o título de Augusto, marcando o início do Império Romano, não sua queda."
-            },
-            { 
-                id: 10, 
-                texto: "476 d.C.", 
-                correta: true,
-                justificativa: "Correto! Em 476 d.C., o último imperador romano do ocidente, Rômulo Augusto, foi deposto pelo líder germânico Odoacro, marcando o fim da Antiguidade."
-            },
-            { 
-                id: 11, 
-                texto: "1453 d.C.", 
-                correta: false,
-                justificativa: "Incorreto. Em 1453 caiu o Império Romano do Oriente (Bizâncio), não o do Ocidente."
-            },
-            { 
-                id: 12, 
-                texto: "1789 d.C.", 
-                correta: false,
-                justificativa: "Incorreto. 1789 marca o início da Revolução Francesa, na Idade Contemporânea."
-            },
-        ]
-    }
-];
+const NotFoundComponent = ({ corMateria, icone, conteudoTipo }: NotFoundComponentProps) => {
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center justify-center">
+            <div 
+                className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                style={{ backgroundColor: `${corMateria}15` }}
+            >
+                {icone}
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {conteudoTipo.charAt(0).toUpperCase() + conteudoTipo.slice(1).toLowerCase()} não disponível
+            </h3>
+            <p className="text-gray-500 max-w-md mx-auto">
+                O conteúdo de {conteudoTipo.toLowerCase()} ainda não foi adicionado. Entre em contato com o suporte para mais informações.
+            </p>
+        </div>
+    );
+}
 
 export default function TopicoPage() {
     const params = useParams();
     const materiaId = params.id as string;
+    const topicoId = params.idTopico as string;
+    const { user } = useAuth();
 
-    const [concluido, setConcluido] = useState(mockTopico.conteudoAtual.concluido);
-    const [isLoading, setIsLoading] = useState(false);
+    const [conteudoId, setConteudoId] = useState<number | null>(null);
+    const [concluido, setConcluido] = useState(false);
 
-    // Simulação - substitua pela chamada real da API
-    const topico = mockTopico;
-    const corMateria = topico.cor;
+    // Busca os dados do tópico
+    const { data: topicoAluno, isLoading: isLoadingTopicoAluno } = useTopicoAluno(topicoId, user?.id?.toString() || '', !!topicoId && !!user?.id);
+    const { data: conteudo, isLoading: isLoadingConteudo } = useConteudo(conteudoId?.toString() || '', !!conteudoId);
 
-    if (isLoading) {
+    // Mutações
+    const marcarConcluidoMutation = useMarcarConteudoConcluido();
+    const concluirQuizMutation = useConcluirQuiz();
+
+    // Inicializa o conteudoId com o conteudo atual do topico
+    useEffect(() => {
+        if (topicoAluno?.conteudoAtual?.id && !conteudoId) {
+            setConteudoId(topicoAluno.conteudoAtual.id);
+            setConcluido(topicoAluno.conteudoAtual.concluido);
+        }
+    }, [topicoAluno, conteudoId]);
+
+    // Atualiza o estado de concluído quando o conteúdo muda
+    useEffect(() => {
+        if (conteudo) {
+            // Busca o progresso no topicoAluno para este conteúdo
+            const conteudoInfo = topicoAluno?.conteudos.find(c => c.id === conteudo.id);
+            setConcluido(conteudoInfo?.status === 'concluido');
+        }
+    }, [conteudo, topicoAluno]);
+
+    if (isLoadingTopicoAluno) {
         return <TopicoSkeleton />;
     }
 
-    const handleMarcarConcluido = () => {
+    if (!topicoAluno) {
+        return <div>Tópico não encontrado</div>;
+    }
+
+    const corMateria = topicoAluno.cor || '#0cc3e4';
+
+    // Lógica de navegação entre conteúdos
+    const conteudoAtualIndex = topicoAluno.conteudos.findIndex(c => c.id === conteudoId);
+    const conteudoAnterior = conteudoAtualIndex > 0 ? topicoAluno.conteudos[conteudoAtualIndex - 1] : null;
+    const conteudoProximo = conteudoAtualIndex < topicoAluno.conteudos.length - 1 ? topicoAluno.conteudos[conteudoAtualIndex + 1] : null;
+
+    const handleMarcarConcluido = async () => {
+        await marcarConcluidoMutation.mutateAsync({ idConteudo: conteudoId!.toString(), idAluno: user!.id!.toString() });
         setConcluido(true);
-        // TODO: Chamar API para marcar como concluído
     };
 
     const handleConteudoClick = (conteudoId: number) => {
-        // TODO: Navegar para o conteúdo específico ou atualizar o viewer
-        console.log('Navegar para conteúdo:', conteudoId);
+        setConteudoId(conteudoId);
     };
 
-    const handleQuizComplete = (acertos: number, total: number) => {
+    const handleAnterior = () => {
+        if (conteudoAnterior) {
+            setConteudoId(conteudoAnterior.id);
+        }
+    };
+
+    const handleProximo = () => {
+        if (conteudoProximo) {
+            setConteudoId(conteudoProximo.id);
+        }
+    };
+
+    const handleQuizComplete = async (acertos: number, total: number) => {
         console.log(`Quiz finalizado: ${acertos}/${total}`);
-        // TODO: Salvar resultado do quiz na API
+        await concluirQuizMutation.mutateAsync({ idConteudo: conteudoId!.toString(), idAluno: user!.id!.toString(), acertos, totalQuestoes: total });
+        setConcluido(true);
+        if (conteudoProximo) {
+            setConteudoId(conteudoProximo.id);
+        }
     };
 
     // Renderiza o conteúdo baseado no tipo
     const renderConteudo = () => {
-        switch (topico.conteudoAtual.tipo) {
+        if (!conteudo) return null;
+
+        switch (conteudo.tipo) {
             case 'VIDEO':
+                // Não renderiza se não houver URL do vídeo
+                if (!conteudo.video?.url) {
+                    return <NotFoundComponent corMateria={corMateria} icone={<VideoOff size={40} style={{ color: corMateria }} />} conteudoTipo="vídeo" />;
+                }
                 return (
                     <VideoContent
-                        titulo={topico.conteudoAtual.titulo}
-                        modulo={topico.moduloNumero}
-                        videoUrl="https://www.w3schools.com/html/mov_bbb.mp4" // URL de exemplo
-                        duracao={150}
+                        titulo={conteudo.titulo}
+                        modulo={topicoAluno.moduloNumero}
+                        videoUrl={conteudo.video.url}
+                        duracao={conteudo.video.duracao || undefined}
                         cor={corMateria}
-                        resumoHtml="<p>Este vídeo apresenta uma introdução ao estudo da história antiga, abordando os principais conceitos e períodos.</p>"
                         onComplete={() => setConcluido(true)}
                     />
                 );
             
             case 'TEXTO':
+                // Não renderiza se não houver corpo do texto
+                if (!conteudo.texto?.corpo) {
+                    return <NotFoundComponent corMateria={corMateria} icone={<FileX size={40} style={{ color: corMateria }} />} conteudoTipo="texto" />;
+                }
                 return (
                     <TextoContent
-                        titulo="Resumo: Introdução à História Antiga"
-                        modulo={topico.moduloNumero}
-                        tempoLeitura={5}
+                        titulo={conteudo.titulo}
+                        modulo={topicoAluno.moduloNumero}
+                        tempoLeitura={conteudo.texto.tempoLeitura || undefined}
                         cor={corMateria}
-                        conteudoHtml={`
-                            <h2>Principais Conceitos</h2>
-                            <p>A história antiga é o período que abrange desde a invenção da escrita (c. 4000 a.C.) até a queda do Império Romano do Ocidente (476 d.C.).</p>
-                            
-                            <h3>Características do Período</h3>
-                            <ul>
-                                <li>Surgimento das primeiras civilizações</li>
-                                <li>Desenvolvimento da escrita</li>
-                                <li>Formação de grandes impérios</li>
-                                <li>Avanços em arquitetura e engenharia</li>
-                            </ul>
-                            
-                            <blockquote>
-                                "A história é a mestra da vida." - Cícero
-                            </blockquote>
-                            
-                            <h3>Civilizações Importantes</h3>
-                            <p>Entre as principais civilizações do período, destacam-se:</p>
-                            <ol>
-                                <li><strong>Mesopotâmia</strong> - Berço da escrita cuneiforme</li>
-                                <li><strong>Egito</strong> - Conhecida pelos faraós e pirâmides</li>
-                                <li><strong>Grécia</strong> - Berço da democracia e filosofia</li>
-                                <li><strong>Roma</strong> - Maior império da antiguidade</li>
-                            </ol>
-                        `}
+                        conteudoHtml={conteudo.texto.corpo}
                     />
                 );
             
             case 'QUIZ':
+                // Não renderiza se não houver questões do quiz
+                if (!conteudo.quiz?.questoes || conteudo.quiz.questoes.length === 0) {
+                    return (
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center justify-center">
+                            <div 
+                                className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                                style={{ backgroundColor: `${corMateria}15` }}
+                            >
+                                <AlertCircle size={40} style={{ color: corMateria }} />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                                Quiz não disponível
+                            </h3>
+                            <p className="text-gray-500 max-w-md mx-auto">
+                                As questões do quiz ainda não foram adicionadas. Entre em contato com o suporte para mais informações.
+                            </p>
+                        </div>
+                    );
+                }
                 return (
                     <QuizContent
-                        titulo={topico.conteudoAtual.titulo}
-                        modulo={topico.moduloNumero}
-                        questoes={mockQuestoes}
+                        titulo={conteudo.titulo}
+                        modulo={topicoAluno.moduloNumero}
+                        questoes={conteudo.quiz.questoes.map(q => ({
+                            ...q,
+                            imagens: q.imagens?.map(img => ({
+                                ...img,
+                                legenda: img.legenda ?? undefined
+                            })) || [],
+                            alternativas: q.alternativas.map(alt => ({
+                                ...alt,
+                                justificativa: alt.justificativa ?? '',
+                                imagens: alt.imagens?.map(img => ({
+                                    url: img.url,
+                                    legenda: img.legenda ?? undefined
+                                })) || []
+                            }))
+                        }))}
                         cor={corMateria}
                         onComplete={handleQuizComplete}
+                        isLoading={concluirQuizMutation.isPending}
                     />
                 );
             
@@ -235,11 +209,11 @@ export default function TopicoPage() {
             default:
                 return (
                     <PDFContent
-                        titulo="Introdução à História Antiga"
-                        modulo={topico.moduloNumero}
+                        titulo={conteudo.titulo}
+                        modulo={topicoAluno.moduloNumero}
                         capitulo="Capítulo 1"
-                        paginaAtual={topico.conteudoAtual.paginaAtual}
-                        totalPaginas={topico.conteudoAtual.totalPaginas}
+                        paginaAtual={1}
+                        totalPaginas={1}
                         cor={corMateria}
                     />
                 );
@@ -269,12 +243,12 @@ export default function TopicoPage() {
                                 href={`/aluno/materia/${materiaId}`}
                                 className="text-gray-500 hover:text-primary transition-colors"
                             >
-                                {topico.materiaNome}
+                                {topicoAluno.materiaNome}
                             </Link>
                         </li>
                         <li><span className="text-gray-300">/</span></li>
                         <li>
-                            <span className="text-gray-500">{topico.moduloNumero}</span>
+                            <span className="text-gray-500">{topicoAluno.moduloNumero}</span>
                         </li>
                         <li><span className="text-gray-300">/</span></li>
                         <li>
@@ -282,7 +256,7 @@ export default function TopicoPage() {
                                 className="font-semibold"
                                 style={{ color: corMateria }}
                             >
-                                {topico.conteudoAtual.titulo}
+                                {conteudo?.titulo || topicoAluno.conteudoAtual?.titulo || ''}
                             </span>
                         </li>
                     </ol>
@@ -291,25 +265,49 @@ export default function TopicoPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     {/* LEFT COLUMN: Content Viewer */}
                     <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-4">
-                        <ContentViewer
-                            titulo={topico.conteudoAtual.titulo}
-                            tipo={topico.conteudoAtual.tipo}
-                            paginaAtual={topico.conteudoAtual.paginaAtual}
-                            totalPaginas={topico.conteudoAtual.totalPaginas}
-                            onMarcarConcluido={handleMarcarConcluido}
-                            concluido={concluido}
-                            cor={corMateria}
-                            showZoom={topico.conteudoAtual.tipo === 'PDF' || topico.conteudoAtual.tipo === 'TEXTO'}
-                            showNavigation={topico.conteudoAtual.tipo !== 'QUIZ'}
-                        >
-                            {renderConteudo()}
-                        </ContentViewer>
+                        {isLoadingConteudo || !conteudo ? (
+                            <ConteudoSkeleton />
+                        ) : (
+                            <>
+                                <ContentViewer
+                                    titulo={conteudo.titulo}
+                                    tipo={conteudo.tipo}
+                                    cor={corMateria}
+                                    showZoom={conteudo.tipo === 'PDF' || conteudo.tipo === 'TEXTO'}
+                                >
+                                    {renderConteudo()}
+                                </ContentViewer>
 
-                        {/* Notas - não mostra para quiz */}
-                        {topico.conteudoAtual.tipo !== 'QUIZ' && (
-                            <NotasCard 
-                                onSave={(notas) => console.log('Salvar notas:', notas)}
-                            />
+                                {/* Resumo - mostra apenas para vídeo quando houver resumo */}
+                                {conteudo.tipo === 'VIDEO' && conteudo.video?.resumoId && (
+                                    <ResumoConteudo
+                                        resumoHtml={conteudo.video.resumo?.corpo || ''}
+                                        cor={corMateria}
+                                    />
+                                )}
+
+                                {/* Notas - não mostra para quiz */}
+                                {conteudo.tipo !== 'QUIZ' && (
+                                    <NotasCard 
+                                        onSave={(notas) => console.log('Salvar notas:', notas)}
+                                    />
+                                )}
+
+                                {/* Navegação - aparece no final de tudo */}
+                                <NavegacaoConteudo
+                                    onAnterior={handleAnterior}
+                                    onProximo={handleProximo}
+                                    onMarcarConcluido={handleMarcarConcluido}
+                                    concluido={concluido}
+                                    cor={corMateria}
+                                    tipo={conteudo.tipo}
+                                    temAnterior={!!conteudoAnterior}
+                                    temProximo={!!conteudoProximo}
+                                    tituloAnterior={conteudoAnterior?.titulo}
+                                    tituloProximo={conteudoProximo?.titulo}
+                                    loadingConcluido={marcarConcluidoMutation.isPending}
+                                />
+                            </>
                         )}
                     </div>
 
@@ -317,18 +315,18 @@ export default function TopicoPage() {
                     <aside className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 lg:sticky lg:top-24">
                         {/* Progress Card */}
                         <ProgressoTopico
-                            percentual={topico.progresso.percentual}
-                            atividadesConcluidas={topico.progresso.atividadesConcluidas}
-                            atividadesTotais={topico.progresso.atividadesTotais}
+                            percentual={topicoAluno.progresso.percentual}
+                            atividadesConcluidas={topicoAluno.progresso.atividadesConcluidas}
+                            atividadesTotais={topicoAluno.progresso.atividadesTotais}
                             cor={corMateria}
                         />
 
                         {/* Module List */}
                         <ListaConteudos
-                            moduloNumero={topico.moduloNumero}
-                            moduloTitulo={topico.titulo}
-                            conteudos={topico.conteudos}
-                            conteudoAtualId={topico.conteudoAtual.id}
+                            moduloNumero={topicoAluno.moduloNumero}
+                            moduloTitulo={topicoAluno.titulo}
+                            conteudos={topicoAluno.conteudos}
+                            conteudoAtualId={conteudoId || topicoAluno.conteudoAtual?.id || 0}
                             cor={corMateria}
                             onConteudoClick={handleConteudoClick}
                         />

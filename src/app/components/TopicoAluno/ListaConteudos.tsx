@@ -76,13 +76,12 @@ export default function ListaConteudos({
                     return (
                         <button
                             key={conteudo.id}
-                            onClick={() => !isBloqueado && onConteudoClick?.(conteudo.id)}
-                            disabled={isBloqueado}
+                            onClick={() => onConteudoClick?.(conteudo.id)}
                             className={`
                                 group flex items-start gap-3 p-4 text-left transition-colors relative
                                 ${!isLast ? 'border-b border-gray-100' : ''}
                                 ${isAtual ? 'bg-primary/5' : 'hover:bg-gray-50'}
-                                ${isBloqueado ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
+                                ${'cursor-pointer'}
                             `}
                             style={isAtual ? { 
                                 borderLeftWidth: '3px',

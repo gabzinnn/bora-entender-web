@@ -1,5 +1,5 @@
 'use client';
-import { BookOpen, Maximize, Pause, Play, Settings, Volume2, VolumeX, X } from "lucide-react";
+import { Maximize, Pause, Play, Settings, Volume2, VolumeX, X } from "lucide-react";
 import { useRef, useState } from "react";
 
 interface VideoContentProps {
@@ -7,7 +7,6 @@ interface VideoContentProps {
     modulo: string;
     videoUrl: string;
     duracao?: number; // em segundos
-    resumoHtml?: string;
     cor?: string;
     onProgress?: (percentual: number) => void;
     onComplete?: () => void;
@@ -18,7 +17,6 @@ export default function VideoContent({
     modulo,
     videoUrl,
     duracao,
-    resumoHtml,
     cor = '#0cc3e4',
     onProgress,
     onComplete
@@ -28,7 +26,6 @@ export default function VideoContent({
     const [isMuted, setIsMuted] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [videoDuration, setVideoDuration] = useState(duracao || 0);
-    const [showResumo, setShowResumo] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [playbackRate, setPlaybackRate] = useState(1);
 
@@ -109,7 +106,7 @@ export default function VideoContent({
     const progressPercent = videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0;
 
     return (
-        <div className="w-full max-w-4xl flex flex-col gap-4">
+        <div className="w-full max-w-6xl flex flex-col gap-4 py-4">
             {/* Video Player Container */}
             <div className="relative bg-black rounded-xl overflow-hidden shadow-lg group">
                 {/* Video Element */}
@@ -238,110 +235,6 @@ export default function VideoContent({
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Video Info Card - Redesenhado */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                {/* Header com gradiente */}
-                <div 
-                    className="px-6 py-4 relative overflow-hidden"
-                    style={{
-                        background: `linear-gradient(135deg, ${cor}15 0%, ${cor}05 100%)`
-                    }}
-                >
-                    {/* Pattern decorativo */}
-                    <div 
-                        className="absolute inset-0 opacity-5"
-                        style={{
-                            backgroundImage: `radial-gradient(circle at 2px 2px, ${cor} 1px, transparent 0)`,
-                            backgroundSize: '24px 24px'
-                        }}
-                    />
-                    
-                    <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span 
-                                    className="text-xs font-bold px-2.5 py-1 rounded-full"
-                                    style={{ 
-                                        backgroundColor: `${cor}20`,
-                                        color: cor
-                                    }}
-                                >
-                                    {modulo}
-                                </span>
-                                <span className="text-xs text-gray-400">•</span>
-                                <span className="text-xs text-gray-500 font-medium">
-                                    {formatTime(videoDuration)}
-                                </span>
-                            </div>
-                            <h2 className="text-xl font-bold text-gray-900 leading-tight">
-                                {titulo}
-                            </h2>
-                        </div>
-                        
-                        {resumoHtml && (
-                            <button
-                                onClick={() => setShowResumo(!showResumo)}
-                                className="shrink-0 flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-lg transition-all hover:scale-105 active:scale-95 shadow-sm"
-                                style={{ 
-                                    backgroundColor: showResumo ? cor : 'white',
-                                    color: showResumo ? 'white' : cor,
-                                    border: `2px solid ${cor}`,
-                                    boxShadow: showResumo ? `0 4px 12px ${cor}30` : 'none'
-                                }}
-                            >
-                                <BookOpen size={16} />
-                                <span className="hidden sm:inline">
-                                    {showResumo ? 'Ocultar' : 'Ver'} Resumo
-                                </span>
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Resumo do Vídeo - Redesenhado */}
-                {showResumo && resumoHtml && (
-                    <div className="relative">
-                        {/* Linha decorativa superior */}
-                        <div 
-                            className="h-1 w-full"
-                            style={{
-                                background: `linear-gradient(90deg, ${cor} 0%, ${cor}50 50%, ${cor} 100%)`
-                            }}
-                        />
-                        
-                        {/* Conteúdo do resumo */}
-                        <div className="px-6 py-5 bg-linear-to-b from-gray-50 to-white">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div 
-                                    className="w-8 h-8 rounded-lg flex items-center justify-center"
-                                    style={{ 
-                                        backgroundColor: `${cor}15`,
-                                        color: cor
-                                    }}
-                                >
-                                    <BookOpen size={16} />
-                                </div>
-                                <h3 className="font-bold text-gray-900">Resumo do Conteúdo</h3>
-                            </div>
-                            
-                            <div 
-                                className="prose prose-sm max-w-none
-                                    prose-headings:text-gray-900 
-                                    prose-p:text-gray-700 prose-p:leading-relaxed
-                                    prose-strong:text-gray-900
-                                    prose-ul:my-2 prose-li:my-1 prose-li:text-gray-700
-                                    prose-a:no-underline hover:prose-a:underline"
-                                style={{
-                                    '--tw-prose-links': cor,
-                                    '--tw-prose-bullets': cor
-                                } as React.CSSProperties}
-                                dangerouslySetInnerHTML={{ __html: resumoHtml }}
-                            />
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );

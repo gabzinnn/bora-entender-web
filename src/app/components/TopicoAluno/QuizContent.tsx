@@ -1,6 +1,7 @@
 'use client';
 import { AlertCircle, Check, CheckCircle, ChevronRight, Lightbulb, RotateCcw, Trophy, X, XCircle } from "lucide-react";
 import { useState } from "react";
+import LoadingSpinner from "../LoadingSpinner";
 
 interface Alternativa {
     id: number;
@@ -22,6 +23,7 @@ interface QuizContentProps {
     modulo: string;
     questoes: Questao[];
     cor?: string;
+    isLoading?: boolean;
     onComplete?: (acertos: number, total: number) => void;
 }
 
@@ -30,6 +32,7 @@ export default function QuizContent({
     modulo,
     questoes,
     cor = '#0cc3e4',
+    isLoading = false,
     onComplete
 }: QuizContentProps) {
     const [questaoAtual, setQuestaoAtual] = useState(0);
@@ -171,9 +174,10 @@ export default function QuizContent({
                                         backgroundColor: cor,
                                         boxShadow: `0 4px 14px ${cor}40`
                                     }}
+                                    onClick={onComplete ? () => onComplete(acertosFinais, totalQuestoes) : undefined}
                                 >
                                     Continuar
-                                    <ChevronRight size={18} />
+                                    {isLoading ? <LoadingSpinner size="xs" /> : <ChevronRight size={18} />}
                                 </button>
                             )}
                         </div>
@@ -326,7 +330,7 @@ export default function QuizContent({
                                             isSelecionada ? <X size={18} /> : letra
                                         ) : letra}
                                     </span>
-                                    <span className="flex-1 font-medium">{alternativa.texto}</span>
+                                    <span className="font-medium self-center">{alternativa.texto}</span>
                                 </button>
 
                                 {/* Justificativa de TODAS as alternativas após confirmar */}
