@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
     //baseURL: "http://localhost:3100",
-    baseURL: "https://bora-entender-back-production.up.railway.app",
+    baseURL: "https://bora-entender-back-production-85b5.up.railway.app",
 });
 
 // Interceptor de requisição
