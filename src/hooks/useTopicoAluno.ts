@@ -71,6 +71,7 @@ export interface PDFData {
     id: number;
     conteudoId: number;
     url: string;
+    htmlUrl: string | null;
     possuiGabarito: boolean;
 }
 

@@ -22,7 +22,7 @@ export default function PDFContent({
     cor = '#0cc3e4'
 }: PDFContentProps) {
     return (
-        <div className="w-full max-w-3xl bg-white text-gray-800 shadow-md min-h-175 p-6 sm:p-12 rounded-sm relative">
+        <div className="w-full bg-white text-gray-800 shadow-md min-h-175 p-6 sm:p-12 rounded-sm relative">
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{titulo}</h1>
