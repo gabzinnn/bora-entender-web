@@ -137,7 +137,7 @@ export default function ContentViewer({
                 className={`relative grow overflow-y-auto flex justify-center ${
                     tipo === 'VIDEO' ? 'bg-gray-100 p-0' : 'bg-gray-100 p-4 sm:p-8'
                 }`}
-                style={shouldShowZoom ? { fontSize: `${zoom}%` } : undefined}
+                style={shouldShowZoom ? { zoom: zoom / 100 } as React.CSSProperties : undefined}
             >
                 {children}
             </div>

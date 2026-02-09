@@ -188,7 +188,7 @@ export default function QuizContent({
     }
 
     return (
-        <div className="w-full max-w-2xl bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="w-full bg-white rounded-xl shadow-md overflow-hidden">
             {/* Header com progresso */}
             <div 
                 className="p-4 sm:p-6 border-b border-gray-100 relative overflow-hidden"

@@ -21,7 +21,7 @@ interface AuthContextData {
 interface Usuario {
     email: string;
     id: number;
-    roles: string | string[];
+    role: string | string[];
 }  
 
 
@@ -32,7 +32,7 @@ export default function AuthContextProvider({ children }: { readonly children: R
     const [user, setUser] = useState<Usuario>({
         id: 0,
         email: "",
-        roles: [],
+        role: "",
     });
 
     const router = useRouter();
@@ -75,7 +75,7 @@ export default function AuthContextProvider({ children }: { readonly children: R
         setUser({
             id: 0,
             email: "",
-            roles: [],
+            role: "",
         });
         router.push("/login");
     }, []);

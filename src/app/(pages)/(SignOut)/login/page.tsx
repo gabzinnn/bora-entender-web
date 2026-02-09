@@ -50,10 +50,11 @@ export default function Login() {
                 );
             } else {
                 signIn && signIn(access_token, payload);
+                const redirectPath = payload.role === "ADMIN" ? "/admin" : "/aluno";
                 modal.success(
                     "Login realizado!",
                     "Você fez login com sucesso.",
-                    () => router.push("/aluno")
+                    () => router.push(redirectPath)
                 );
             }
         }
@@ -70,7 +71,9 @@ export default function Login() {
 
     useEffect(() => {
         if (user && user.id !== 0) {
-            router.push("/aluno");
+            console.log(user)
+            const redirectPath = user.role === "ADMIN" ? "/admin" : "/aluno";
+            router.push(redirectPath);
         }
     }, [user, router]);
 
