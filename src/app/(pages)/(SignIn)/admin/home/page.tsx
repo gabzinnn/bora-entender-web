@@ -1,5 +1,6 @@
 'use client';
 import AdminSidebar from "@/app/components/AdminSidebar";
+import LoadingScreen from "@/app/components/LoadingScreen";
 import { useAdminHome, DashboardResponse } from "@/hooks/useAdminHome";
 import { Users, CreditCard, BookOpen, TrendingUp, TrendingDown, UserPlus, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -145,10 +146,10 @@ function DashboardContent({ data }: { data: DashboardResponse }) {
     const totalNovosAlunos = graficoNovosAlunos.reduce((acc, i) => acc + i.quantidade, 0);
 
     return (
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[#fafafa]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-bg-secondary">
             <div className="mx-auto flex max-w-350 flex-col gap-8">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 md:px-0 pl-16">
                     <div>
                         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Visão Geral</h2>
                         <p className="mt-1 text-gray-500">Métricas e crescimento da plataforma</p>
@@ -376,9 +377,7 @@ export default function AdminHome() {
             <AdminSidebar />
             <main className="flex flex-1 flex-col overflow-hidden">
                 {isLoading && (
-                    <div className="flex-1 flex items-center justify-center">
-                        <Loader2 size={40} className="animate-spin text-[#00cdef]" />
-                    </div>
+                    <LoadingScreen />
                 )}
                 {isError && (
                     <div className="flex-1 flex items-center justify-center">
