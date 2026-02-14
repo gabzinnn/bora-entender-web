@@ -4,14 +4,17 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (user && user.role !== "ADMIN") {
+        if (!loading && (!user || user.role !== "ADMIN")) {
             router.push("/login");
         }
-    }, [user]);
+    }, [user, loading]);
+
+    if (loading) return null;
+
     return (
         <>
             {children}

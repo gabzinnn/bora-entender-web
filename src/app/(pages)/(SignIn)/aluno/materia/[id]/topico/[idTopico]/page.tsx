@@ -53,8 +53,6 @@ export default function TopicoPage() {
 
     const [conteudoId, setConteudoId] = useState<number | null>(null);
     const [concluido, setConcluido] = useState(false);
-    const [pdfHtml, setPdfHtml] = useState<string | null>(null);
-    const [loadingPdf, setLoadingPdf] = useState(false);
 
     // Busca os dados do tópico
     const { data: topicoAluno, isLoading: isLoadingTopicoAluno } = useTopicoAluno(topicoId, user?.id?.toString() || '', !!topicoId && !!user?.id);
@@ -80,23 +78,6 @@ export default function TopicoPage() {
             setConcluido(conteudoInfo?.status === 'concluido');
         }
     }, [conteudo, topicoAluno]);
-
-    // Busca HTML do PDF quando o conteúdo é PDF
-    useEffect(() => {
-        if (conteudo?.tipo === 'PDF' && conteudo.pdf?.htmlUrl) {
-            setLoadingPdf(true);
-            fetch(conteudo.pdf.htmlUrl)
-                .then(res => res.text())
-                .then(html => setPdfHtml(html))
-                .catch(err => {
-                    console.error('Erro ao buscar HTML do PDF:', err);
-                    setPdfHtml(null);
-                })
-                .finally(() => setLoadingPdf(false));
-        } else {
-            setPdfHtml(null);
-        }
-    }, [conteudo]);
 
     if (isLoadingTopicoAluno) {
         return <TopicoSkeleton />;
@@ -226,24 +207,15 @@ export default function TopicoPage() {
             
             case 'PDF':
             default:
-                if (!conteudo.pdf?.url || !conteudo.pdf.htmlUrl) {
-                    return <NotFoundComponent corMateria={corMateria} icone={<FileX size={40} style={{ color: corMateria }} />} conteudoTipo="PDF" />;
-                }
-                if (loadingPdf) {
-                    return <ConteudoSkeleton />;
-                }
-                if (!pdfHtml) {
+                if (!conteudo.pdf?.url) {
                     return <NotFoundComponent corMateria={corMateria} icone={<FileX size={40} style={{ color: corMateria }} />} conteudoTipo="PDF" />;
                 }
                 return (
                     <PDFContent
                         titulo={conteudo.titulo}
                         modulo={topicoAluno.moduloNumero}
-                        capitulo="Capítulo 1"
-                        paginaAtual={1}
-                        totalPaginas={1}
+                        pdfUrl={conteudo.pdf.url}
                         cor={corMateria}
-                        conteudoHtml={pdfHtml}
                     />
                 );
         }

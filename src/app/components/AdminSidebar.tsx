@@ -1,5 +1,5 @@
 'use client';
-import { LayoutDashboard, LogOut, NotebookText, Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, LogOut, NotebookText, Menu, X, ChevronLeft, ChevronRight, Users, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,11 +17,11 @@ interface ItemProps {
 
 function Item({ title, icon, path, isActive, onClick, isCollapsed }: ItemProps) {
     return (
-        <Link href={path} onClick={onClick} className={`w-full flex flex-row items-center gap-4 py-2 px-4 rounded-xl cursor-pointer transition-colors ${
+        <Link href={path} onClick={onClick} className={`w-full flex flex-row items-center gap-3 py-2.5 px-3 rounded-xl cursor-pointer transition-colors ${
             isActive ? 'bg-[#00cdef]/10 text-[#00cdef]' : 'text-gray-500 hover:bg-gray-100'
         } ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="text-current font-bold">{icon}</div>
-            {!isCollapsed && <span className={`text-lg font-bold`}>{title}</span>}
+            <div className="text-current font-bold shrink-0">{icon}</div>
+            {!isCollapsed && <span className="text-sm font-bold truncate">{title}</span>}
         </Link>
     )
 }
@@ -34,7 +34,9 @@ export default function AdminSidebar() {
 
     const tabs = [
         { title: 'Home', icon: <LayoutDashboard size={20} />, path: '/admin/home' },
-        { title: 'Materias', icon: <NotebookText size={20} />, path: '/admin/materias' },
+        { title: 'Financeiro', icon: <Wallet size={20} />, path: '/admin/financeiro' },
+        { title: 'Matérias', icon: <NotebookText size={20} />, path: '/admin/materias' },
+        { title: 'Alunos', icon: <Users size={20} />, path: '/admin/alunos' },
     ]
 
     const handleCloseSidebar = () => setIsOpen(false);
@@ -49,7 +51,7 @@ export default function AdminSidebar() {
             {/* Mobile Menu Button */}
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md border border-border-light"
+                className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
                 {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -63,29 +65,29 @@ export default function AdminSidebar() {
             )}
 
             {/* Sidebar Desktop */}
-            <aside className={`hidden md:flex relative h-screen border border-border-light flex-col items-center bg-white shadow-lg transition-all duration-300 ${
-                isCollapsed ? 'md:w-20 p-4' : 'md:w-[15vw] p-8'
+            <aside className={`hidden md:flex relative h-screen border-r border-gray-200/80 flex-col bg-white transition-all duration-300 overflow-hidden ${
+                isCollapsed ? 'w-20 p-4 items-center' : 'w-56 p-5 items-stretch'
             }`}>
                 {/* Toggle Button */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className={`absolute top-4 p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 z-10 cursor-pointer ${
-                        isCollapsed ? 'right-2' : 'right-4'
+                    className={`absolute top-4 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 z-10 cursor-pointer ${
+                        isCollapsed ? 'right-1.5' : 'right-4'
                     }`}
                 >
                     {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
                 </button>
 
-                <div className={`transition-all duration-300 ${isCollapsed ? 'mt-12' : 'mt-0'}`}>
+                <div className={`flex justify-center transition-all duration-300 ${isCollapsed ? 'mt-12' : 'mt-0'}`}>
                     <Image
                         src={isCollapsed ? "/assets/images/logoMenor.png" : "/assets/images/logoCompleto.png"}
                         alt="Bora Entender Logo"
-                        width={isCollapsed ? 50 : 150}
-                        height={isCollapsed ? 50 : 150}
+                        width={isCollapsed ? 40 : 130}
+                        height={isCollapsed ? 40 : 130}
                         className="transition-all duration-300"
                     />
                 </div>
-                <nav className="w-full flex flex-col gap-4 mt-8 py-2 flex-1">
+                <nav className="w-full flex flex-col gap-2 mt-8 py-2 flex-1">
                     {tabs.map((tab) => (
                         <Item 
                             key={tab.title} 
@@ -98,18 +100,18 @@ export default function AdminSidebar() {
                     ))}
                     <button 
                         onClick={signOut} 
-                        className={`w-full mt-auto flex flex-row items-center px-4 py-2 gap-4 cursor-pointer rounded-2xl text-gray-500 hover:bg-gray-100 transition-colors hover:text-brand-red-hover ${
+                        className={`w-full mt-auto flex flex-row items-center px-3 py-2.5 gap-3 cursor-pointer rounded-xl text-gray-500 hover:bg-gray-100 transition-colors hover:text-red-500 ${
                             isCollapsed ? 'justify-center' : 'justify-start'
                         }`}
                     >
-                        <LogOut size={20} />
-                        {!isCollapsed && <span className="text-lg font-bold">Sair</span>}
+                        <LogOut size={20} className="shrink-0" />
+                        {!isCollapsed && <span className="text-sm font-bold">Sair</span>}
                     </button>
                 </nav>
             </aside>
 
             {/* Sidebar Mobile */}
-            <aside className={`md:hidden fixed left-0 top-0 w-64 h-screen border-r border-border-light p-6 flex flex-col items-center bg-white shadow-lg z-40 transition-transform duration-300 ${
+            <aside className={`md:hidden fixed left-0 top-0 w-64 h-screen p-6 flex flex-col items-center bg-white shadow-2xl z-40 transition-transform duration-300 ${
                 isOpen ? 'translate-x-0' : '-translate-x-full'
             }`}>
                 <Image

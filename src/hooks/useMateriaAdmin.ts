@@ -23,15 +23,17 @@ export type Materia = {
     topicos: Topico[];
 };
 
-async function fetchMateriasAdmin(): Promise<Materia[]> {
-    const response = await api.get('/materia/admin/lista');
+async function fetchMateriasAdmin(search?: string): Promise<Materia[]> {
+    const params = search ? { search } : {};
+    const response = await api.get('/materia/admin/lista', { params });
     return response.data;
 }
 
-export default function useMateriaAdmin() {
+export default function useMateriaAdmin(search?: string) {
     return useQuery({
-        queryKey: ['materiasAdmin'],
-        queryFn: fetchMateriasAdmin,
-        staleTime: 1000 * 60 * 5, // 5 minutos
-    })
+        queryKey: ['materiasAdmin', search ?? ''],
+        queryFn: () => fetchMateriasAdmin(search),
+        staleTime: 1000 * 60 * 5,
+        placeholderData: (prev) => prev, // mantém dados anteriores enquanto busca
+    });
 }

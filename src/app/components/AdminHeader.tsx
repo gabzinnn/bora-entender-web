@@ -4,6 +4,7 @@ import { Input } from "@/app/components/Input";
 import { Botao } from "@/app/components/Botao";
 import { Search, type LucideIcon } from "lucide-react";
 import React from "react";
+import AdminAvatar from "./AdminAvatar";
 
 // ─── Tipos de Breadcrumb ────────────────────────────────────────
 interface BreadcrumbItem {
@@ -191,33 +192,12 @@ export function AdminHeader({
 
                 {/* Perfil do usuário */}
                 {showUserProfile && (
-                    <div className="flex items-center gap-3">
-                        <div className="text-right hidden sm:block">
-                            <p className="text-xs font-bold leading-none text-[#111718]">
-                                {userName}
-                            </p>
-                            <p className="text-[10px] text-text-tertiary mt-1 uppercase tracking-wider">
-                                {userRole}
-                            </p>
-                        </div>
-                        <div
-                            className={`
-                                w-10 h-10 rounded-full border-2 border-white shadow-sm
-                                flex items-center justify-center shrink-0
-                                ${userAvatarUrl
-                                    ? "bg-cover bg-center"
-                                    : "bg-primary/20"
-                                }
-                            `}
-                            style={userAvatarUrl ? { backgroundImage: `url('${userAvatarUrl}')` } : undefined}
-                        >
-                            {!userAvatarUrl && (
-                                <span className="text-sm font-bold text-primary">
-                                    {userInitials}
-                                </span>
-                            )}
-                        </div>
-                    </div>
+                    <AdminAvatar
+                        userName={userName}
+                        userRole={userRole}
+                        userAvatarUrl={userAvatarUrl}
+                        userInitials={userInitials}
+                    />
                 )}
             </div>
         </header>

@@ -11,7 +11,7 @@ interface MateriaCardProps {
     /** Descrição da matéria */
     descricao?: string | null;
     /** Ícone da matéria (Lucide) */
-    icone: LucideIcon;
+    icone: React.ReactNode;
     /** Cor hexadecimal da matéria */
     cor?: string | null;
     /** Quantidade de tópicos */
@@ -91,7 +91,7 @@ export function MateriaAdmCard({
                             color: cor || '#00ccf0',
                         }}
                     >
-                        <Icon className="w-8 h-8" />
+                        {Icon}
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-xl font-bold text-text-primary leading-tight truncate">{nome}</h3>

@@ -67,16 +67,23 @@ export default function ResumoConteudo({
                 
                 {/* Conteúdo */}
                 <div className="px-6 py-5 bg-linear-to-b from-gray-50/50 to-white">
-                    <div 
-                        className="prose prose-sm max-w-none
+                    <article 
+                        className="prose prose-sm prose-gray max-w-none
                             prose-headings:text-gray-900 
-                            prose-p:text-gray-700 prose-p:leading-relaxed
+                            prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4
+                            prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
+                            prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
+                            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
                             prose-strong:text-gray-900
-                            prose-ul:my-2 prose-li:my-1 prose-li:text-gray-700
-                            prose-a:no-underline hover:prose-a:underline"
+                            prose-ul:my-4 prose-li:my-1
+                            prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
+                            prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+                            prose-img:rounded-lg prose-img:shadow-md
+                        "
                         style={{
                             '--tw-prose-links': cor,
-                            '--tw-prose-bullets': cor
+                            '--tw-prose-bullets': cor,
+                            '--tw-prose-quote-borders': cor
                         } as React.CSSProperties}
                         dangerouslySetInnerHTML={{ __html: resumoHtml }}
                     />

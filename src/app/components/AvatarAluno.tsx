@@ -1,7 +1,7 @@
 'use client';
 import Image from "next/image";
 import { useState } from "react";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/authContext";
 import { useHomeAluno } from "@/hooks/useHomeAluno";
@@ -18,10 +18,17 @@ export default function AvatarAluno({
     const { data } = useHomeAluno();
     const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuth();
+
+    const isAdmin = user?.role === 'ADMIN';
 
     const handleViewProfile = () => {
         router.push('/aluno/perfil');
+        setMenuOpen(false);
+    };
+
+    const handleGoToAdmin = () => {
+        router.push('/admin');
         setMenuOpen(false);
     };
 
@@ -43,23 +50,41 @@ export default function AvatarAluno({
 
                 {/* Menu Dropdown */}
                 {menuOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
-                        <button
-                            onClick={handleViewProfile}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-text-main hover:bg-gray-50 transition-colors rounded-t-xl font-medium text-sm cursor-pointer"
-                        >
-                            <User size={18} />
-                            Ver Perfil
-                        </button>
-                        <div className="border-t border-gray-100"></div>
-                        <button
-                            onClick={signOut}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition-colors rounded-b-xl font-medium text-sm cursor-pointer"
-                        >
-                            <LogOut size={18} />
-                            Sair
-                        </button>
-                    </div>
+                    <>
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
+                            <button
+                                onClick={handleViewProfile}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-text-main hover:bg-gray-50 transition-colors rounded-t-xl font-medium text-sm cursor-pointer"
+                            >
+                                <User size={18} />
+                                Ver Perfil
+                            </button>
+                            {isAdmin && (
+                                <>
+                                    <div className="border-t border-gray-100"></div>
+                                    <button
+                                        onClick={handleGoToAdmin}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-primary hover:bg-primary/5 transition-colors font-medium text-sm cursor-pointer"
+                                    >
+                                        <ShieldCheck size={18} />
+                                        Modo Admin
+                                    </button>
+                                </>
+                            )}
+                            <div className="border-t border-gray-100"></div>
+                            <button
+                                onClick={signOut}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition-colors rounded-b-xl font-medium text-sm cursor-pointer"
+                            >
+                                <LogOut size={18} />
+                                Sair
+                            </button>
+                        </div>
+                        <div 
+                            className="fixed inset-0 z-40" 
+                            onClick={() => setMenuOpen(false)}
+                        />
+                    </>
                 )}
             </div>
         );
@@ -87,23 +112,41 @@ export default function AvatarAluno({
 
             {/* Menu Dropdown */}
             {menuOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
-                    <button
-                        onClick={handleViewProfile}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-text-main hover:bg-gray-50 transition-colors rounded-t-xl font-medium text-sm cursor-pointer"
-                    >
-                        <User size={18} />
-                        Ver Perfil
-                    </button>
-                    <div className="border-t border-gray-100"></div>
-                    <button
-                        onClick={signOut}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition-colors rounded-b-xl font-medium text-sm cursor-pointer"
-                    >
-                        <LogOut size={18} />
-                        Sair
-                    </button>
-                </div>
+                <>
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
+                        <button
+                            onClick={handleViewProfile}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-text-main hover:bg-gray-50 transition-colors rounded-t-xl font-medium text-sm cursor-pointer"
+                        >
+                            <User size={18} />
+                            Ver Perfil
+                        </button>
+                        {isAdmin && (
+                            <>
+                                <div className="border-t border-gray-100"></div>
+                                <button
+                                    onClick={handleGoToAdmin}
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-primary hover:bg-primary/5 transition-colors font-medium text-sm cursor-pointer"
+                                >
+                                    <ShieldCheck size={18} />
+                                    Modo Admin
+                                </button>
+                            </>
+                        )}
+                        <div className="border-t border-gray-100"></div>
+                        <button
+                            onClick={signOut}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition-colors rounded-b-xl font-medium text-sm cursor-pointer"
+                        >
+                            <LogOut size={18} />
+                            Sair
+                        </button>
+                    </div>
+                    <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setMenuOpen(false)}
+                    />
+                </>
             )}
         </div>
     );
