@@ -122,7 +122,7 @@ export default function AlunosAdmin() {
             grow: 2,
             cell: (row: AlunoAdmin) => (
                 <div className="flex items-center gap-3 py-2">
-                    <div className="size-9 rounded-full bg-gradient-to-br from-cyan-400 to-sky-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    <div className="size-9 rounded-full bg-linear-to-br from-cyan-400 to-sky-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
                         {row.nome.charAt(0).toUpperCase()}
                     </div>
                     <span className="font-bold text-gray-800 truncate">{row.nome}</span>
@@ -251,7 +251,7 @@ export default function AlunosAdmin() {
                         <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm mb-6">
                             <div className="flex flex-wrap items-end gap-4">
                                 {/* Search */}
-                                <div className="flex flex-col flex-1 min-w-[280px]">
+                                <div className="flex flex-col flex-1 min-w-70">
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">
                                         Buscar Estudante
                                     </label>
