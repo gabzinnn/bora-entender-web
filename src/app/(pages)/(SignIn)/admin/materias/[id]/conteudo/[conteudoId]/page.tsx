@@ -107,9 +107,10 @@ interface VideoEditorProps {
     onUpload: (file: File) => void;
     isUploading: boolean;
     uploadProgress: number | null;
+    videoStatus?: 'PROCESSANDO' | 'PRONTO' | 'ERRO';
 }
 
-function VideoEditor({ videoUrl, onVideoUrlChange, duracao, onDuracaoChange, resumo, onResumoChange, onUpload, isUploading, uploadProgress }: VideoEditorProps) {
+function VideoEditor({ videoUrl, onVideoUrlChange, duracao, onDuracaoChange, resumo, onResumoChange, onUpload, isUploading, uploadProgress, videoStatus }: VideoEditorProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [dragOver, setDragOver] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
@@ -195,6 +196,32 @@ function VideoEditor({ videoUrl, onVideoUrlChange, duracao, onDuracaoChange, res
                         className="hidden"
                     />
                 </div>
+
+                {/* Status de processamento HLS */}
+                {videoStatus === 'PROCESSANDO' && (
+                    <div className="mt-3 flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                        <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                        <div>
+                            <p className="text-sm font-semibold text-amber-800">Processando vídeo para streaming...</p>
+                            <p className="text-xs text-amber-600">O vídeo está sendo convertido para HLS. Isso pode levar alguns minutos.</p>
+                        </div>
+                    </div>
+                )}
+                {videoStatus === 'ERRO' && (
+                    <div className="mt-3 flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <AlertCircle size={20} className="text-red-500 shrink-0" />
+                        <div>
+                            <p className="text-sm font-semibold text-red-800">Erro no processamento</p>
+                            <p className="text-xs text-red-600">Houve um erro ao processar o vídeo. Tente fazer upload novamente.</p>
+                        </div>
+                    </div>
+                )}
+                {videoStatus === 'PRONTO' && videoUrl?.endsWith('.m3u8') && (
+                    <div className="mt-3 flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <CheckCircle2 size={20} className="text-green-500 shrink-0" />
+                        <p className="text-sm font-semibold text-green-800">Vídeo otimizado para streaming (HLS)</p>
+                    </div>
+                )}
             </div>
 
             {/* Preview */}
@@ -1077,6 +1104,7 @@ export default function ConteudoEditorPage() {
                                     onUpload={handleUploadVideo}
                                     isUploading={upload.isPending}
                                     uploadProgress={uploadProgress}
+                                    videoStatus={conteudo.video?.status}
                                 />
                             )}
 

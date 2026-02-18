@@ -24,7 +24,9 @@ export type QuestaoDetalhe = {
 export type VideoDetalhe = {
     id: number;
     url: string;
+    urlOriginal: string | null;
     duracao: number | null;
+    status: 'PROCESSANDO' | 'PRONTO' | 'ERRO';
     resumoId: number | null;
     resumo: { id: number; corpo: string; tempoLeitura: number | null } | null;
 };
@@ -138,6 +140,14 @@ export default function useConteudoGerenciar(conteudoId: number) {
         queryFn: () => fetchConteudoDetalhe(conteudoId),
         staleTime: 1000 * 60 * 2,
         enabled: !!conteudoId && conteudoId > 0,
+        refetchInterval: (query) => {
+            // Polling a cada 5s enquanto o vídeo está sendo processado
+            const data = query.state.data;
+            if (data?.tipo === 'VIDEO' && data?.video?.status === 'PROCESSANDO') {
+                return 5000;
+            }
+            return false;
+        },
     });
 
     const invalidate = () => queryClient.invalidateQueries({ queryKey });

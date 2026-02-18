@@ -62,7 +62,9 @@ export interface VideoData {
     id: number;
     conteudoId: number;
     url: string;
+    urlOriginal: string | null;
     duracao: number | null;
+    status: 'PROCESSANDO' | 'PRONTO' | 'ERRO';
     resumoId: number | null;
     resumo: TextoData | null;
 }
@@ -177,6 +179,14 @@ export function useConteudo(idConteudo: string, enabled: boolean = true) {
         queryKey: ['conteudo', idConteudo],
         queryFn: () => fetchConteudo(idConteudo),
         enabled,
+        refetchInterval: (query) => {
+            // Polling a cada 5s enquanto o vídeo está sendo processado
+            const data = query.state.data;
+            if (data?.tipo === 'VIDEO' && data?.video?.status === 'PROCESSANDO') {
+                return 5000;
+            }
+            return false;
+        },
     });
 }
 

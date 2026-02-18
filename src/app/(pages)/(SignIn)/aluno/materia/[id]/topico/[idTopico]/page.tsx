@@ -141,6 +141,7 @@ export default function TopicoPage() {
                         videoUrl={conteudo.video.url}
                         duracao={conteudo.video.duracao || undefined}
                         cor={corMateria}
+                        status={conteudo.video.status}
                         onComplete={() => setConcluido(true)}
                     />
                 );
