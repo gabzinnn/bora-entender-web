@@ -5,7 +5,7 @@ import { forwardRef, useCallback, useEffect, type ReactNode } from "react";
 import { Botao, type ButtonVariant } from "../Botao";
 
 type ModalType = "success" | "error" | "warning" | "info" | "custom";
-type ModalSize = "sm" | "md" | "lg";
+type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
 interface ModalButton {
   label: string;
@@ -86,18 +86,24 @@ const sizeStyles: Record<ModalSize, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
+  xl: "max-w-2xl",
+  "2xl": "max-w-5xl",
 };
 
 const iconSizes: Record<ModalSize, string> = {
   sm: "h-10 w-10",
   md: "h-12 w-12",
   lg: "h-14 w-14",
+  xl: "h-16 w-16",
+  "2xl": "h-16 w-16",
 };
 
 const iconInnerSizes: Record<ModalSize, string> = {
   sm: "h-5 w-5",
   md: "h-6 w-6",
   lg: "h-7 w-7",
+  xl: "h-8 w-8",
+  "2xl": "h-8 w-8",
 };
 
 const Modal = forwardRef<HTMLDivElement, ModalProps>(
@@ -175,21 +181,21 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
 
     // Build buttons array
     const allButtons: ModalButton[] = [];
-    
+
     if (secondaryButton) {
       allButtons.push({
         ...secondaryButton,
         variant: secondaryButton.variant || "secondary",
       });
     }
-    
+
     if (primaryButton) {
       allButtons.push({
         ...primaryButton,
         variant: primaryButton.variant || defaultButtonVariant[type],
       });
     }
-    
+
     if (buttons) {
       allButtons.push(...buttons);
     }
@@ -216,6 +222,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             relative bg-white rounded-2xl shadow-xl
             w-full ${sizeStyles[size]}
             p-6 sm:p-8
+            max-h-[90vh] overflow-y-auto
             animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-300
             ${className}
           `}

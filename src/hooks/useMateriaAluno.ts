@@ -30,8 +30,11 @@ interface MateriaDetalhes {
     topicos: Topico[];
 }
 
+import { parseCookies } from "nookies";
+
 async function fetchMateriaAluno(materiaId: string): Promise<MateriaDetalhes> {
-    const alunoId = JSON.parse(localStorage.getItem('@BoraEntender:user') || '{}').id;
+    const { '@BoraEntender:user': user } = parseCookies();
+    const alunoId = user ? JSON.parse(user).id : '';
     const materia = await api.get<MateriaDetalhes>(`/materia/${materiaId}/aluno/${alunoId}`);
     return materia.data;
 }

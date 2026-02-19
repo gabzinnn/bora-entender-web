@@ -37,6 +37,7 @@ import {
 import EquationModal from './EquationModal';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
+import { setCookie, parseCookies } from 'nookies';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Types
@@ -190,8 +191,8 @@ function ToolbarBtn({ icon, title, onClick, active, disabled }: ToolbarBtnProps)
             }}
             disabled={disabled}
             className={`p-1.5 rounded-md transition-all duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${active
-                    ? 'bg-primary/20 text-primary ring-1 ring-primary/30'
-                    : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                ? 'bg-primary/20 text-primary ring-1 ring-primary/30'
+                : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
                 }`}
         >
             {icon}
@@ -221,7 +222,8 @@ function ColorDropdown({ colors, onSelect, onClose, title, storageKey }: ColorDr
     const [tempColor, setTempColor] = useState<string | null>(null);
 
     useEffect(() => {
-        const stored = localStorage.getItem(storageKey);
+        const cookies = parseCookies();
+        const stored = cookies[storageKey];
         if (stored) {
             try {
                 setCustomColors(JSON.parse(stored));
@@ -235,13 +237,19 @@ function ColorDropdown({ colors, onSelect, onClose, title, storageKey }: ColorDr
         if (!color || customColors.includes(color)) return;
         const newColors = [...customColors, color];
         setCustomColors(newColors);
-        localStorage.setItem(storageKey, JSON.stringify(newColors));
+        setCookie(null, storageKey, JSON.stringify(newColors), {
+            maxAge: 60 * 60 * 24 * 365, // 1 ano
+            path: '/',
+        });
     };
 
     const removeCustomColor = (colorToRemove: string) => {
         const newColors = customColors.filter(c => c !== colorToRemove);
         setCustomColors(newColors);
-        localStorage.setItem(storageKey, JSON.stringify(newColors));
+        setCookie(null, storageKey, JSON.stringify(newColors), {
+            maxAge: 60 * 60 * 24 * 365, // 1 ano
+            path: '/',
+        });
     };
 
     useEffect(() => {

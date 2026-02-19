@@ -26,8 +26,10 @@ export interface UpdatePerfilData {
     novaSenha?: string;
 }
 
+import { parseCookies } from "nookies";
+
 function getUserId(): string {
-    const user = localStorage.getItem('@BoraEntender:user');
+    const { '@BoraEntender:user': user } = parseCookies();
     if (!user) throw new Error('Usuário não encontrado');
     return JSON.parse(user).id;
 }

@@ -1,5 +1,5 @@
 'use client';
-import { LayoutDashboard, LogOut, NotebookText, Menu, X, ChevronLeft, ChevronRight, Users, Wallet } from "lucide-react";
+import { LayoutDashboard, LogOut, NotebookText, Menu, X, ChevronLeft, ChevronRight, Users, Wallet, CreditCard } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,6 +37,7 @@ export default function AdminSidebar() {
         { title: 'Financeiro', icon: <Wallet size={20} />, path: '/admin/financeiro' },
         { title: 'Matérias', icon: <NotebookText size={20} />, path: '/admin/materias' },
         { title: 'Alunos', icon: <Users size={20} />, path: '/admin/alunos' },
+        { title: 'Planos', icon: <CreditCard size={20} />, path: '/admin/planos' },
     ]
 
     const handleCloseSidebar = () => setIsOpen(false);

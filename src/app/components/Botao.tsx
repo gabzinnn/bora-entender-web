@@ -1,7 +1,7 @@
 import { type LucideIcon } from "lucide-react";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "danger";
+type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,9 +14,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: "bg-primary hover:bg-primary-hover text-white",
-  secondary: "bg-brand-red hover:bg-brand-red-hover text-white",
-  danger: "bg-primary-alt hover:bg-primary-alt-hover text-white",
+  primary: "bg-primary hover:bg-primary-hover text-white border border-transparent",
+  secondary: "bg-brand-red hover:bg-brand-red-hover text-white border border-transparent",
+  danger: "bg-primary-alt hover:bg-primary-alt-hover text-white border border-transparent",
+  outline: "bg-transparent hover:bg-gray-50 text-text-primary border border-border-light",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

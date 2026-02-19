@@ -28,7 +28,7 @@ export default function AvatarAluno({
     };
 
     const handleGoToAdmin = () => {
-        router.push('/admin');
+        router.push('/admin/home');
         setMenuOpen(false);
     };
 

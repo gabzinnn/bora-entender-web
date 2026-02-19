@@ -33,13 +33,15 @@ async function fetchHomeAluno(userId: string): Promise<HomeResponse> {
     return await api.get<HomeResponse>(`/aluno/home/${userId}`).then(res => res.data);
 }
 
+import { parseCookies } from "nookies";
+
 export function useHomeAluno() {
     return useQuery<HomeResponse, Error>({
         queryKey: ['homeAluno'],
         queryFn: () => {
-            const user = localStorage.getItem('@BoraEntender:user');
+            const { '@BoraEntender:user': user } = parseCookies();
             if (!user) {
-                throw new Error('Usuário não encontrado no localStorage');
+                throw new Error('Usuário não encontrado nos cookies');
             }
             const userId = JSON.parse(user).id;
             return fetchHomeAluno(userId);

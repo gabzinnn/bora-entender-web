@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { setCookie, parseCookies, destroyCookie } from "nookies";
 
 import React, {
     createContext,
@@ -11,7 +12,7 @@ import React, {
 } from "react";
 
 interface AuthContextData {
-    signIn: (token:string, user: Usuario) => void;
+    signIn: (token: string, user: Usuario) => void;
     signOut: () => void;
     token: string;
     user: Usuario;
@@ -22,7 +23,7 @@ interface Usuario {
     email: string;
     id: number;
     role: string | string[];
-}  
+}
 
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -38,39 +39,47 @@ export default function AuthContextProvider({ children }: { readonly children: R
     const router = useRouter();
 
     const loadStoragedData = useCallback(async () => {
-
-        const token = await localStorage.getItem("@BoraEntender:token")
-        const user = await localStorage.getItem("@BoraEntender:user")
+        const cookies = parseCookies();
+        const token = cookies["@BoraEntender:token"];
+        const user = cookies["@BoraEntender:user"];
 
         if (token && user) {
             setToken(token);
-            setUser(JSON.parse(user));
+            try {
+                setUser(JSON.parse(user));
+            } catch (e) {
+                console.error("Erro ao fazer parse do usuário do cookie", e);
+            }
         }
     }, []);
 
     const [loading, setLoading] = useState(true);
 
-    const signIn = useCallback(async (access_token: string, payload: Usuario) => { //armazena o token e user no localStorage e no useState
-        console.log("teste SignIn - armazenar token");
-        localStorage.setItem("@BoraEntender:token", access_token);
-        console.log("Token armazenado no storage");
+    const signIn = useCallback(async (access_token: string, payload: Usuario) => {
+        console.log("teste SignIn - armazenar token e user em cookies");
+
+        setCookie(null, "@BoraEntender:token", access_token, {
+            maxAge: 60 * 60 * 24 * 30, // 30 dias
+            path: "/",
+        });
+
+        setCookie(null, "@BoraEntender:user", JSON.stringify(payload), {
+            maxAge: 60 * 60 * 24 * 30, // 30 dias
+            path: "/",
+        });
 
         setToken(access_token);
-
-        console.log("teste armazenar info usuário");
-        localStorage.setItem("@BoraEntender:user", JSON.stringify(payload));
-        console.log("Usuário armazenado no storage");
-
         setUser(payload);
     }, []);
 
     useEffect(() => {
         loadStoragedData().finally(() => setLoading(false));
-    }, []);
+    }, [loadStoragedData]);
 
-    const signOut = useCallback(async () => { //remove token e user do localStorage e remove token do useState
-        await localStorage.removeItem("@BoraEntender:token");
-        localStorage.removeItem("@BoraEntender:user");
+    const signOut = useCallback(async () => {
+        destroyCookie(null, "@BoraEntender:token", { path: '/' });
+        destroyCookie(null, "@BoraEntender:user", { path: '/' });
+
         setToken("");
         setUser({
             id: 0,
@@ -78,17 +87,13 @@ export default function AuthContextProvider({ children }: { readonly children: R
             role: "",
         });
         router.push("/login");
-    }, []);
-
-    useEffect(() => {
-        loadStoragedData();
-    }, []);
+    }, [router]);
 
     return (
         <AuthContext.Provider
             value={{
                 signIn,
-                signOut,          
+                signOut,
                 token,
                 user,
                 loading,
@@ -100,7 +105,7 @@ export default function AuthContextProvider({ children }: { readonly children: R
 }
 
 export function useAuth() {
-    
+
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error("useAuth must be used within an AuthProvider");
