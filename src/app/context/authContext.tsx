@@ -42,6 +42,8 @@ export default function AuthContextProvider({ children }: { readonly children: R
         const cookies = parseCookies();
         const token = cookies["@BoraEntender:token"];
         const user = cookies["@BoraEntender:user"];
+        console.log("teste loadStoragedData - token:", token);
+        console.log("teste loadStoragedData - user:", user);
 
         if (token && user) {
             setToken(token);
@@ -56,7 +58,7 @@ export default function AuthContextProvider({ children }: { readonly children: R
     const [loading, setLoading] = useState(true);
 
     const signIn = useCallback(async (access_token: string, payload: Usuario) => {
-        console.log("teste SignIn - armazenar token e user em cookies");
+        console.log("teste SignIn - armazenar token e user em cookies", access_token);
 
         setCookie(null, "@BoraEntender:token", access_token, {
             maxAge: 60 * 60 * 24 * 30, // 30 dias

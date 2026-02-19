@@ -107,6 +107,7 @@ export default function PlanosAdminPage() {
                                     id={plano.id}
                                     nome={plano.nome}
                                     preco={plano.preco}
+                                    precoOriginal={plano.precoOriginal}
                                     periodo={plano.periodo}
                                     popular={plano.popular}
                                     ativo={plano.ativo}

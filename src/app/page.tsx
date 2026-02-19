@@ -73,7 +73,7 @@ function Hero() {
             <h1 className="font-heading text-primary text-4xl sm:text-5xl lg:text-[64px] font-bold leading-[1.1] tracking-tight">
               Entender nunca foi tão simples
             </h1>
-            <p className="text-black text-lg sm:text-xl leading-relaxed max-w-160 mx-auto lg:mx-0">
+            <p className="text-black text-lg sm:text-xl leading-relaxed max-w-160 mx-auto lg:mx-0 text-justify">
               A plataforma que fala a sua língua. Com um ensino de aluno para aluno, domine as matérias da escola de
               um jeito simples, rápido e sem complicações.
             </p>
@@ -103,7 +103,7 @@ function Hero() {
               className="aspect-square lg:aspect-4/3 w-full rounded-2xl bg-cover bg-center overflow-hidden shadow-lg"
               style={{
                 backgroundImage:
-                  "url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1600&q=80')",
+                  "url('https://bvleiyxqgtnxwmkfigfd.supabase.co/storage/v1/object/public/Imagens/imagemBEhome')",
               }}
             />
           </div>
@@ -125,8 +125,8 @@ function FeatureColumn({
   return (
     <div>
       <div className="mb-6">
-        <h3 className="font-heading text-2xl font-bold text-text-primary mb-2">{title}</h3>
-        <p className="text-text-secondary">{subtitle}</p>
+        <h3 className="font-heading text-2xl font-bold text-text-primary mb-2 text-center">{title}</h3>
+        <p className="text-text-secondary text-center">{subtitle}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -158,7 +158,7 @@ function Features() {
         </div>
 
         <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
-          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-[#f5c9a8] -translate-x-1/2" />
+          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-brand-red/70 -translate-x-1/2" />
 
           <FeatureColumn
             title="Para alunos"
@@ -203,7 +203,7 @@ function CallToAction() {
 
 function WelcomeStrip() {
   return (
-    <section className="bg-bg-primary py-8">
+    <section className="bg-bg-primary py-8 mb-4">
       <PublicContainer>
         <div className="grid sm:grid-cols-3 gap-4">
           <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Edit, Trash2, CheckCircle, Smartphone } from 'lucide-react';
 import { Botao } from './Botao';
 
@@ -6,6 +5,7 @@ interface PlanoAdmCardProps {
     id: number;
     nome: string;
     preco: number;
+    precoOriginal?: number | null;
     periodo: 'MENSAL' | 'ANUAL';
     popular: boolean;
     ativo: boolean;
@@ -15,9 +15,17 @@ interface PlanoAdmCardProps {
     onExcluir: () => void;
 }
 
+const formatPrice = (centavos: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(centavos / 100);
+};
+
 export function PlanoAdmCard({
     nome,
     preco,
+    precoOriginal,
     periodo,
     popular,
     ativo,
@@ -26,12 +34,10 @@ export function PlanoAdmCard({
     onEditar,
     onExcluir,
 }: PlanoAdmCardProps) {
-    const formatPrice = (centavos: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(centavos / 100);
-    };
+    const hasDiscount = precoOriginal && precoOriginal > preco;
+    const discountPercent = hasDiscount
+        ? Math.round(((precoOriginal - preco) / precoOriginal) * 100)
+        : null;
 
     return (
         <article className={`flex flex-col rounded-2xl border transition-all duration-200 bg-white h-full relative group hover:shadow-lg ${ativo ? 'border-border-light' : 'border-red-200 bg-red-50/30'
@@ -56,6 +62,7 @@ export function PlanoAdmCard({
             </div>
 
             <div className="p-6 flex flex-col flex-1">
+                {/* Nome e Período */}
                 <div className="mb-4 pr-12">
                     <h2 className="font-bold text-xl text-text-primary font-lexend mb-1">{nome}</h2>
                     <p className="text-sm text-text-secondary font-lexend">
@@ -63,7 +70,18 @@ export function PlanoAdmCard({
                     </p>
                 </div>
 
+                {/* Preço com desconto */}
                 <div className="mb-6">
+                    {hasDiscount && (
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm text-text-secondary line-through font-lexend">
+                                {formatPrice(precoOriginal)}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-bold font-lexend">
+                                -{discountPercent}%
+                            </span>
+                        </div>
+                    )}
                     <span className="font-heading text-3xl font-bold text-text-primary">
                         {formatPrice(preco)}
                     </span>
@@ -72,6 +90,7 @@ export function PlanoAdmCard({
                     </span>
                 </div>
 
+                {/* Matérias */}
                 <div className="flex items-center gap-2 mb-6">
                     <div className="px-3 py-1.5 rounded-lg bg-bg-secondary text-text-secondary text-sm font-medium font-lexend flex items-center gap-2">
                         <CheckCircle size={14} className="text-primary" />
@@ -79,6 +98,7 @@ export function PlanoAdmCard({
                     </div>
                 </div>
 
+                {/* Ações */}
                 <div className="mt-auto grid grid-cols-2 gap-3 pt-4 border-t border-border-light">
                     <Botao
                         variant="secondary"

@@ -20,6 +20,7 @@ export function CriarEditarPlanoModal({ isOpen, onClose, planoParaEditar }: Cria
 
     const [nome, setNome] = useState('');
     const [preco, setPreco] = useState(0); // em centavos
+    const [precoOriginal, setPrecoOriginal] = useState<number | null>(null);
     const [stripePriceId, setStripePriceId] = useState('');
     const [periodo, setPeriodo] = useState<'MENSAL' | 'ANUAL'>('MENSAL');
     const [popular, setPopular] = useState(false);
@@ -38,6 +39,7 @@ export function CriarEditarPlanoModal({ isOpen, onClose, planoParaEditar }: Cria
             if (planoParaEditar) {
                 setNome(planoParaEditar.nome);
                 setPreco(planoParaEditar.preco);
+                setPrecoOriginal(planoParaEditar.precoOriginal ?? null);
                 setStripePriceId(planoParaEditar.stripePriceId);
                 setPeriodo(planoParaEditar.periodo);
                 setPopular(planoParaEditar.popular);
@@ -54,6 +56,7 @@ export function CriarEditarPlanoModal({ isOpen, onClose, planoParaEditar }: Cria
     const limparFormulario = () => {
         setNome('');
         setPreco(0);
+        setPrecoOriginal(null);
         setStripePriceId('');
         setPeriodo('MENSAL');
         setPopular(false);
@@ -83,6 +86,7 @@ export function CriarEditarPlanoModal({ isOpen, onClose, planoParaEditar }: Cria
         mutation.mutate({
             nome,
             preco: Number(preco),
+            precoOriginal: precoOriginal ? Number(precoOriginal) : null,
             stripePriceId,
             periodo,
             popular,
@@ -137,16 +141,27 @@ export function CriarEditarPlanoModal({ isOpen, onClose, planoParaEditar }: Cria
                                 />
                             </div>
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-text-primary">Período</label>
-                                <select
+                                <label className="text-sm font-medium text-text-primary">Preço Original (cents)</label>
+                                <input
+                                    type="number"
                                     className="w-full px-4 py-3 bg-bg-secondary border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-lexend text-text-primary"
-                                    value={periodo}
-                                    onChange={(e) => setPeriodo(e.target.value as 'MENSAL' | 'ANUAL')}
-                                >
-                                    <option value="MENSAL">Mensal</option>
-                                    <option value="ANUAL">Anual</option>
-                                </select>
+                                    value={precoOriginal ?? ''}
+                                    onChange={(e) => setPrecoOriginal(e.target.value ? Number(e.target.value) : null)}
+                                    placeholder="4000 (opcional)"
+                                />
                             </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium text-text-primary">Período</label>
+                            <select
+                                className="w-full px-4 py-3 bg-bg-secondary border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-lexend text-text-primary"
+                                value={periodo}
+                                onChange={(e) => setPeriodo(e.target.value as 'MENSAL' | 'ANUAL')}
+                            >
+                                <option value="MENSAL">Mensal</option>
+                                <option value="ANUAL">Anual</option>
+                            </select>
                         </div>
 
                         <Input

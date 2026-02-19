@@ -79,7 +79,7 @@ export default function AdminSidebar() {
                     {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
                 </button>
 
-                <div className={`flex justify-center transition-all duration-300 ${isCollapsed ? 'mt-12' : 'mt-0'}`}>
+                <Link href="/" className={`flex justify-center transition-all duration-300 ${isCollapsed ? 'mt-12' : 'mt-0'}`}>
                     <Image
                         src={isCollapsed ? "/assets/images/logoMenor.png" : "/assets/images/logoCompleto.png"}
                         alt="Bora Entender Logo"
@@ -87,7 +87,7 @@ export default function AdminSidebar() {
                         height={isCollapsed ? 40 : 130}
                         className="transition-all duration-300"
                     />
-                </div>
+                </Link>
                 <nav className="w-full flex flex-col gap-2 mt-8 py-2 flex-1">
                     {tabs.map((tab) => (
                         <Item 

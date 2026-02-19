@@ -6,6 +6,7 @@ type PlanCardProps = {
     id: number;
     nome: string;
     preco: number;
+    precoOriginal?: number | null;
     stripePriceId: string;
     beneficios: string[];
     periodo?: "mensal" | "anual";
@@ -19,7 +20,12 @@ function formatPrice(centavos: number) {
     });
 }
 
-export function PlanCard({ id, nome, preco, beneficios, periodo, popular }: PlanCardProps) {
+export function PlanCard({ id, nome, preco, precoOriginal, beneficios, periodo, popular }: PlanCardProps) {
+    const hasDiscount = precoOriginal && precoOriginal > preco;
+    const discountPercent = hasDiscount
+        ? Math.round(((precoOriginal - preco) / precoOriginal) * 100)
+        : null;
+
     return (
         <article
             className={`flex flex-col rounded-2xl border-2 p-6 bg-white h-full ${popular ? "border-primary shadow-lg" : "border-border-light"
@@ -37,10 +43,23 @@ export function PlanCard({ id, nome, preco, beneficios, periodo, popular }: Plan
             <h2 className="font-bold text-2xl mb-1">{nome}</h2>
             <p className="text-text-secondary mb-4">Cobrança {periodo === "anual" ? "anual" : "mensal"}</p>
 
-            <p className="font-heading text-4xl text-primary font-bold mb-6">
-                {formatPrice(preco)}
-                <span className="text-base text-text-secondary font-normal">/{periodo === "anual" ? "ano" : "mês"}</span>
-            </p>
+            {/* Preço com desconto */}
+            <div className="mb-6">
+                {hasDiscount && (
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base text-text-secondary line-through">
+                            {formatPrice(precoOriginal)}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+                            -{discountPercent}%
+                        </span>
+                    </div>
+                )}
+                <p className="font-heading text-4xl text-primary font-bold">
+                    {formatPrice(preco)}
+                    <span className="text-base text-text-secondary font-normal">/{periodo === "anual" ? "ano" : "mês"}</span>
+                </p>
+            </div>
 
             {/* Lista cresce e empurra o botão para a base */}
             <ul className="space-y-3 mb-8 flex-1">

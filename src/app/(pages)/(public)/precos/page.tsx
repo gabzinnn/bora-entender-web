@@ -9,6 +9,7 @@ type Plano = {
     id: number;
     nome: string;
     preco: number;
+    precoOriginal?: number | null;
     stripePriceId: string;
     beneficios: string[];
     periodo?: "mensal" | "anual";
