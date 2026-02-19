@@ -20,7 +20,7 @@ export default function ComparisonTable() {
         <div ref={ref}>
             <div className={`reveal-scale ${inView ? 'in-view' : ''} overflow-hidden rounded-2xl border border-border-light shadow-sm`}>
                 {/* Header */}
-                <div className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-[1fr_160px_160px] bg-gradient-to-r from-primary/5 to-primary/10">
+                <div className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-[1fr_160px_160px] bg-linear-to-r from-primary/5 to-primary/10">
                     <div className="p-4 sm:p-5">
                         <span className="font-bold text-text-primary text-sm sm:text-base">Funcionalidade</span>
                     </div>
