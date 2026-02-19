@@ -15,6 +15,9 @@ import {
 import Link from "next/link";
 import { Botao } from "./components/Botao";
 import { PublicContainer, PublicFooter, PublicHeader } from "./components/PublicSiteLayout";
+import ComparisonTable from "./components/public/ComparisonTable";
+import AnimatedStats from "./components/public/AnimatedStats";
+import Reveal from "./components/public/Reveal";
 
 const showConnectedStudents = false;
 
@@ -70,25 +73,31 @@ function Hero() {
       <PublicContainer>
         <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
           <div className="flex flex-col gap-6 flex-1 text-center lg:text-left">
-            <h1 className="font-heading text-primary text-4xl sm:text-5xl lg:text-[64px] font-bold leading-[1.1] tracking-tight">
-              Entender nunca foi tão simples
-            </h1>
-            <p className="text-black text-lg sm:text-xl leading-relaxed max-w-160 mx-auto lg:mx-0 text-justify">
-              A plataforma que fala a sua língua. Com um ensino de aluno para aluno, domine as matérias da escola de
-              um jeito simples, rápido e sem complicações.
-            </p>
-            <div className="pt-4 flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <Link href="/cadastroAluno" className="sm:w-auto w-full">
-                <Botao variant="secondary" size="lg" rightIcon={ArrowRight} fullWidth className="sm:w-auto">
-                  Começar agora
-                </Botao>
-              </Link>
-              <Link href="/precos" className="sm:w-auto w-full">
-                <Botao variant="primary" size="lg" fullWidth className="sm:w-auto">
-                  Ver planos
-                </Botao>
-              </Link>
-            </div>
+            <Reveal variant="left">
+              <h1 className="font-heading text-primary text-4xl sm:text-5xl lg:text-[64px] font-bold leading-[1.1] tracking-tight">
+                Entender nunca foi tão simples
+              </h1>
+            </Reveal>
+            <Reveal variant="left" stagger={2}>
+              <p className="text-black text-lg sm:text-xl leading-relaxed max-w-160 mx-auto lg:mx-0 text-justify">
+                A plataforma que fala a sua língua. Com um ensino de aluno para aluno, domine as matérias da escola de
+                um jeito simples, rápido e sem complicações.
+              </p>
+            </Reveal>
+            <Reveal variant="left" stagger={4}>
+              <div className="pt-4 flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                <Link href="/cadastroAluno" className="sm:w-auto w-full">
+                  <Botao variant="secondary" size="lg" rightIcon={ArrowRight} fullWidth className="sm:w-auto">
+                    Começar agora
+                  </Botao>
+                </Link>
+                <Link href="/precos" className="sm:w-auto w-full">
+                  <Botao variant="primary" size="lg" fullWidth className="sm:w-auto">
+                    Ver planos
+                  </Botao>
+                </Link>
+              </div>
+            </Reveal>
 
             {showConnectedStudents && (
               <div className="flex items-center justify-center lg:justify-start gap-3 pt-4">
@@ -98,7 +107,7 @@ function Hero() {
             )}
           </div>
 
-          <div className="flex-1 w-full max-w-160 lg:max-w-none">
+          <Reveal variant="right" className="flex-1 w-full max-w-160 lg:max-w-none">
             <div
               className="aspect-square lg:aspect-4/3 w-full rounded-2xl bg-cover bg-center overflow-hidden shadow-lg"
               style={{
@@ -106,10 +115,34 @@ function Hero() {
                   "url('https://bvleiyxqgtnxwmkfigfd.supabase.co/storage/v1/object/public/Imagens/imagemBEhome')",
               }}
             />
-          </div>
+          </Reveal>
         </div>
       </PublicContainer>
     </section>
+  );
+}
+
+function FeatureCard({
+  title,
+  description,
+  icon: Icon,
+  index,
+}: {
+  title: string;
+  description: string;
+  icon: typeof PlayCircle;
+  index: number;
+}) {
+  return (
+    <Reveal variant="up" stagger={index + 1}>
+      <div className="flex flex-col bg-white/80 p-5 rounded-xl border border-[#f5c9a8] shadow-sm md:h-60 h-full hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+        <div className="w-11 h-11 bg-brand-red/10 rounded-lg flex items-center justify-center text-brand-red mb-4 shrink-0">
+          <Icon className="h-6 w-6" />
+        </div>
+        <h4 className="text-base font-bold text-text-primary mb-2">{title}</h4>
+        <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
+      </div>
+    </Reveal>
   );
 }
 
@@ -124,20 +157,22 @@ function FeatureColumn({
 }) {
   return (
     <div>
-      <div className="mb-6">
-        <h3 className="font-heading text-2xl font-bold text-text-primary mb-2 text-center">{title}</h3>
-        <p className="text-text-secondary text-center">{subtitle}</p>
-      </div>
+      <Reveal>
+        <div className="mb-6">
+          <h3 className="font-heading text-2xl font-bold text-text-primary mb-2 text-center">{title}</h3>
+          <p className="text-text-secondary text-center">{subtitle}</p>
+        </div>
+      </Reveal>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {items.map(({ title: itemTitle, description, icon: Icon }) => (
-          <div key={itemTitle} className="flex flex-col bg-white/80 p-5 rounded-xl border border-[#f5c9a8] shadow-sm md:h-60 h-full">
-            <div className="w-11 h-11 bg-brand-red/10 rounded-lg flex items-center justify-center text-brand-red mb-4 shrink-0">
-              <Icon className="h-6 w-6" />
-            </div>
-            <h4 className="text-base font-bold text-text-primary mb-2">{itemTitle}</h4>
-            <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
-          </div>
+        {items.map(({ title: itemTitle, description, icon }, index) => (
+          <FeatureCard
+            key={itemTitle}
+            title={itemTitle}
+            description={description}
+            icon={icon}
+            index={index}
+          />
         ))}
       </div>
     </div>
@@ -148,14 +183,16 @@ function Features() {
   return (
     <section className="w-full bg-[#feede0] py-16 lg:py-24">
       <PublicContainer>
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-text-primary font-heading text-3xl sm:text-4xl font-bold mb-4">
-            Entendemos suas necessidades e entregamos a solução
-          </h2>
-          <p className="text-text-secondary text-lg max-w-3xl mx-auto">
-            Metodologia e infraestrutura focada em quem quer aprender sem complicação e do seu jeito.
-          </p>
-        </div>
+        <Reveal>
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-text-primary font-heading text-3xl sm:text-4xl font-bold mb-4">
+              Entendemos suas necessidades e entregamos a solução
+            </h2>
+            <p className="text-text-secondary text-lg max-w-3xl mx-auto">
+              Metodologia e infraestrutura focada em quem quer aprender sem complicação e do seu jeito.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
           <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-brand-red/70 -translate-x-1/2" />
@@ -177,25 +214,69 @@ function Features() {
   );
 }
 
+function StatsSection() {
+  return (
+    <section className="w-full bg-bg-secondary py-16 lg:py-24">
+      <PublicContainer>
+        <Reveal>
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text-primary mb-4">
+              Números que falam por si
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Uma plataforma em crescimento, feita para transformar o modo como você estuda.
+            </p>
+          </div>
+        </Reveal>
+        <AnimatedStats />
+      </PublicContainer>
+    </section>
+  );
+}
+
+function ComparisonSection() {
+  return (
+    <section className="w-full bg-bg-primary py-16 lg:py-24">
+      <PublicContainer>
+        <Reveal>
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text-primary mb-4">
+              Por que escolher o Bora Entender?
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Veja como nos diferenciamos das plataformas tradicionais.
+            </p>
+          </div>
+        </Reveal>
+        <div className="max-w-4xl mx-auto">
+          <ComparisonTable />
+        </div>
+      </PublicContainer>
+    </section>
+  );
+}
+
 function CallToAction() {
   return (
     <section className="w-full bg-bg-primary py-16 lg:py-24">
       <PublicContainer>
-        <div className="bg-primary/10 rounded-lg p-8 sm:p-10 lg:p-16 flex flex-col items-center text-center">
-          <h2 className="font-heading text-primary text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 max-w-3xl">
-            Pronto para entender as matérias de verdade?
-          </h2>
-          <p className="text-text-primary text-lg mb-10 max-w-2xl">
-            Temos planos para diferentes perfis de alunos e famílias, com uma jornada clara para aprender no seu
-            ritmo.
-          </p>
+        <Reveal variant="scale">
+          <div className="bg-primary/10 rounded-2xl p-8 sm:p-10 lg:p-16 flex flex-col items-center text-center">
+            <h2 className="font-heading text-primary text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 max-w-3xl">
+              Pronto para entender as matérias de verdade?
+            </h2>
+            <p className="text-text-primary text-lg mb-10 max-w-2xl">
+              Temos planos para diferentes perfis de alunos e famílias, com uma jornada clara para aprender no seu
+              ritmo.
+            </p>
 
-          <Link href="/precos">
-            <Botao variant="secondary" size="lg" rightIcon={ArrowRight}>
-              Nossos planos
-            </Botao>
-          </Link>
-        </div>
+            <Link href="/precos">
+              <Botao variant="secondary" size="lg" rightIcon={ArrowRight}>
+                Nossos planos
+              </Botao>
+            </Link>
+          </div>
+        </Reveal>
       </PublicContainer>
     </section>
   );
@@ -206,18 +287,18 @@ function WelcomeStrip() {
     <section className="bg-bg-primary py-8 mb-4">
       <PublicContainer>
         <div className="grid sm:grid-cols-3 gap-4">
-          <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
-            <CheckCircle className="w-5 h-5 text-primary-alt" />
-            <span className="font-medium text-text-primary">Trilhas por matéria e nível escolar</span>
-          </div>
-          <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
-            <Smile className="w-5 h-5 text-primary" />
-            <span className="font-medium text-text-primary">Didática simples e linguagem direta</span>
-          </div>
-          <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-brand-red" />
-            <span className="font-medium text-text-primary">Aprendizado leve, prático e contínuo</span>
-          </div>
+          {[
+            { icon: CheckCircle, color: "text-primary-alt", text: "Trilhas por matéria e nível escolar" },
+            { icon: Smile, color: "text-primary", text: "Didática simples e linguagem direta" },
+            { icon: Sparkles, color: "text-brand-red", text: "Aprendizado leve, prático e contínuo" },
+          ].map((item, index) => (
+            <Reveal key={item.text} variant="up" stagger={index + 1}>
+              <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
+                <item.icon className={`w-5 h-5 ${item.color}`} />
+                <span className="font-medium text-text-primary">{item.text}</span>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </PublicContainer>
     </section>
@@ -232,6 +313,8 @@ export default function Home() {
         <Hero />
         <WelcomeStrip />
         <Features />
+        <StatsSection />
+        <ComparisonSection />
         <CallToAction />
         <PublicFooter />
       </div>

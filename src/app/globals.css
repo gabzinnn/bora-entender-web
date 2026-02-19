@@ -7,40 +7,40 @@
   --color-primary-hover: #00bfe0;
   --color-primary-alt: #13ec13;
   --color-primary-alt-hover: #10d610;
-  
+
   /* Brand Colors - Accent */
   --color-brand-red: #ff4d2e;
   --color-brand-red-hover: #e6452a;
   --color-brand-yellow: #ffd500;
   --color-brand-yellow-alt: #ffd41c;
-  
+
   /* Background Colors */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f9f9f9;
   --color-bg-tertiary: #f6f8f6;
   --color-bg-quaternary: #f8f6f5;
-  
+
   /* Text Colors */
   --color-text-primary: #101718;
   --color-text-secondary: #6b7280;
   --color-text-tertiary: #60848a;
   --color-text-quaternary: #618961;
-  
+
   /* Surface Colors (Cards, Panels) */
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
-  
+
   /* Border Colors */
   --color-border-light: #e5e7eb;
   --color-border-lighter: #f0f4f0;
   --color-border-lightest: #dbe6db;
-  
+
   /* State Colors */
   --color-success: #13ec13;
   --color-info: #00ccf0;
   --color-warning: #ffd500;
   --color-error: #ff4d2e;
-  
+
   /* Font Families */
   --font-display: Inter, sans-serif;
   --font-heading: Poppins, sans-serif;
@@ -48,7 +48,7 @@
   --font-lexend: Lexend, sans-serif;
   --font-jakarta: "Plus Jakarta Sans", sans-serif;
   --font-montserrat: Montserrat, sans-serif;
-  
+
   /* Border Radius */
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
@@ -63,4 +63,109 @@ body {
 
 button {
   cursor: pointer;
+}
+
+/* ============================================
+   SCROLL-REVEAL ANIMATIONS — Apple-like polish
+   ============================================ */
+
+/* Base state: invisible, slightly offset */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(4px);
+  will-change: opacity, transform, filter;
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Scale variant */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-scale.in-view {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+/* Slide from left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-left.in-view {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+/* Slide from right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-right.in-view {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+/* Stagger delays for children */
+.stagger-1 {
+  transition-delay: 0.06s;
+}
+
+.stagger-2 {
+  transition-delay: 0.12s;
+}
+
+.stagger-3 {
+  transition-delay: 0.18s;
+}
+
+.stagger-4 {
+  transition-delay: 0.24s;
+}
+
+.stagger-5 {
+  transition-delay: 0.30s;
+}
+
+.stagger-6 {
+  transition-delay: 0.36s;
+}
+
+.stagger-7 {
+  transition-delay: 0.42s;
+}
+
+.stagger-8 {
+  transition-delay: 0.48s;
 }

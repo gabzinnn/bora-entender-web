@@ -29,7 +29,7 @@ interface NotFoundComponentProps {
 const NotFoundComponent = ({ corMateria, icone, conteudoTipo }: NotFoundComponentProps) => {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center justify-center">
-            <div 
+            <div
                 className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
                 style={{ backgroundColor: `${corMateria}15` }}
             >
@@ -145,7 +145,7 @@ export default function TopicoPage() {
                         onComplete={() => setConcluido(true)}
                     />
                 );
-            
+
             case 'TEXTO':
                 // Não renderiza se não houver corpo do texto
                 if (!conteudo.texto?.corpo) {
@@ -160,13 +160,13 @@ export default function TopicoPage() {
                         conteudoHtml={conteudo.texto.corpo}
                     />
                 );
-            
+
             case 'QUIZ':
                 // Não renderiza se não houver questões do quiz
                 if (!conteudo.quiz?.questoes || conteudo.quiz.questoes.length === 0) {
                     return (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center justify-center">
-                            <div 
+                            <div
                                 className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
                                 style={{ backgroundColor: `${corMateria}15` }}
                             >
@@ -205,7 +205,7 @@ export default function TopicoPage() {
                         isLoading={concluirQuizMutation.isPending}
                     />
                 );
-            
+
             case 'PDF':
             default:
                 if (!conteudo.pdf?.url) {
@@ -225,14 +225,14 @@ export default function TopicoPage() {
     return (
         <main className="w-full min-h-screen h-full flex flex-col">
             <HeaderAluno />
-            
+
             <div className="flex-1 bg-bg-secondary px-4 sm:px-6 lg:px-8 py-6">
                 {/* Breadcrumb */}
                 <nav aria-label="Breadcrumb" className="flex mb-6">
                     <ol className="flex items-center space-x-2 text-sm font-medium flex-wrap">
                         <li>
-                            <Link 
-                                href="/aluno" 
+                            <Link
+                                href="/aluno"
                                 className="text-gray-500 hover:text-primary transition-colors flex items-center gap-1"
                             >
                                 <LayoutDashboard size={16} />
@@ -241,7 +241,7 @@ export default function TopicoPage() {
                         </li>
                         <li><span className="text-gray-300">/</span></li>
                         <li>
-                            <Link 
+                            <Link
                                 href={`/aluno/materia/${materiaId}`}
                                 className="text-gray-500 hover:text-primary transition-colors"
                             >
@@ -254,7 +254,7 @@ export default function TopicoPage() {
                         </li>
                         <li><span className="text-gray-300">/</span></li>
                         <li>
-                            <span 
+                            <span
                                 className="font-semibold"
                                 style={{ color: corMateria }}
                             >
@@ -290,8 +290,9 @@ export default function TopicoPage() {
 
                                 {/* Notas - não mostra para quiz */}
                                 {conteudo.tipo !== 'QUIZ' && (
-                                    <NotasCard 
-                                        onSave={(notas) => console.log('Salvar notas:', notas)}
+                                    <NotasCard
+                                        conteudoId={conteudo.id}
+                                        alunoId={user?.id || 0}
                                     />
                                 )}
 

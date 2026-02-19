@@ -2,6 +2,7 @@ import Link from "next/link";
 import Logo from "../Logo";
 import { Botao } from "../Botao";
 import { PublicNavigation } from "./PublicNavigation";
+import { Instagram } from "lucide-react";
 
 export const publicNavLinks = [
   { label: "Quem somos", href: "/quem-somos" },
@@ -85,6 +86,15 @@ export function PublicFooter() {
             <p className="text-text-secondary text-sm leading-relaxed max-w-xs">
               A plataforma de estudos feita para você. Simples, direta e sem complicações.
             </p>
+            <a
+              href="https://www.instagram.com/bora_entender"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-bg-secondary border border-border-light flex items-center justify-center text-text-secondary hover:text-pink-500 hover:border-pink-300 hover:bg-pink-50 transition-all duration-200"
+              aria-label="Instagram Bora Entender"
+            >
+              <Instagram size={20} />
+            </a>
           </div>
 
           {footerColumns.map((column) => (
