@@ -20,6 +20,7 @@ import { useConcluirQuiz, useConteudo, useMarcarConteudoConcluido, useTopicoAlun
 import { useAuth } from "@/app/context/authContext";
 import ConteudoSkeleton from "@/app/components/Skeleton/ConteudoSkeleton";
 
+// Componente para quando o conteúdo não é encontrado
 interface NotFoundComponentProps {
     corMateria: string;
     icone: React.ReactNode;
