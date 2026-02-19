@@ -132,7 +132,7 @@ function PagamentoContent() {
         modal.success(
           "Pagamento confirmado!",
           "Sua assinatura foi ativada com sucesso. Aproveite todos os benefícios do seu plano!",
-          () => router.push("/dashboard")
+          () => router.push("/aluno")
         );
       } else if (response.data.status === "pending") {
         modal.warning(

@@ -1,170 +1,178 @@
-'use client';
-import { FilePenLine, GraduationCap, MessageCircle, PlayCircle, ArrowRight } from "lucide-react";
-import Image from "next/image";
+import {
+  ArrowRight,
+  CheckCircle,
+  FilePenLine,
+  Gift,
+  Goal,
+  MonitorCheck,
+  PlayCircle,
+  ShieldCheck,
+  Smile,
+  Sparkles,
+  Timer,
+  MessageCircle,
+} from "lucide-react";
+import Link from "next/link";
 import { Botao } from "./components/Botao";
-import { useRouter } from "next/navigation";
+import { PublicContainer, PublicFooter, PublicHeader } from "./components/PublicSiteLayout";
 
-const navLinks = [
-  { label: "Sobre", href: "#" },
-  { label: "Cursos", href: "#" },
-  { label: "Preços", href: "#" },
-];
+const showConnectedStudents = false;
 
-const features = [
+const studentFeatures = [
   {
     title: "Aulas Dinâmicas",
-    description:
-      "Aprenda com vídeos curtos e diretos ao ponto, sem enrolação. Ideal para revisar antes da prova.",
+    description: "Vídeos objetivos e explicações visuais para manter o foco e acelerar a compreensão.",
     icon: PlayCircle,
   },
   {
     title: "Exercícios Práticos",
-    description:
-      "Teste seu conhecimento com quizzes divertidos e ganhe recompensas a cada acerto.",
+    description: "Atividades com aplicação real para fixar conteúdo e ganhar confiança para as provas.",
     icon: FilePenLine,
   },
   {
-    title: "Tire Dúvidas",
-    description:
-      "Monitores disponíveis para te ajudar a qualquer hora do dia. Nunca mais fique travado na lição.",
+    title: "Didática com sistema de recompensas",
+    description: "Cada avanço rende reconhecimento e mantém o aluno motivado durante a jornada.",
+    icon: Gift,
+  },
+  {
+    title: "Espaço para dúvidas",
+    description: "Canal direto para perguntar e receber apoio sem travar nos pontos mais difíceis.",
     icon: MessageCircle,
   },
 ];
 
-const footerColumns = [
+const parentsFeatures = [
   {
-    title: "Plataforma",
-    links: ["Cursos", "Preços", "Mentoria"],
+    title: "Acompanhamento das metas",
+    description: "Visualize o progresso por objetivos e acompanhe cada conquista com clareza.",
+    icon: Goal,
   },
   {
-    title: "Suporte",
-    links: ["Central de Ajuda", "Termos de Uso", "Privacidade"],
+    title: "Monitoramento de atividade",
+    description: "Painel com frequência e desempenho para entender a rotina de estudos do aluno.",
+    icon: MonitorCheck,
   },
   {
-    title: "Social",
-    links: ["Instagram", "TikTok", "Twitter"],
+    title: "Praticidade na rotina",
+    description: "Conteúdo organizado e trilhas guiadas para simplificar o dia a dia da família.",
+    icon: Timer,
+  },
+  {
+    title: "Ambiente seguro",
+    description: "Plataforma estruturada para foco em educação, com acompanhamento responsável.",
+    icon: ShieldCheck,
   },
 ];
-
-const avatars = [
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBWTyw5o0kLJHPyrMPhv5LKebgvRrrVSC-6IravpV9La_AW5xyuVfWZLJ3gLIRg8vIpH5PDvGhEiCRa2EjCGv1HW98wOaHLrXZ590l0X0J9ADmgu9EXNkEJRKdAXaZgH4qpVb54aM_e8bRlzWJTtPn-C20PUtx_4pHEFF82hnT5JST3jtqjpB3GGiCY2kdb4WbIxZN7vv-FzDHjj2EnB0Ra3ocUAmVrqHWan-XP63uaorL4RYKE545W1ODn7uwPMx32GFjxOgIuxQYi",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuDvh2JA09xbUJ2qPO3ZsuBhsWIdID4peYZ5B9d595whgA8yGXhIFnaSoL5-8d_k3A9PSxrX75A0mpWbrcaZoXaDBr1A3lYhaUphhNa7dKY-oVApVefk9mH0Hx1gWIXupqcKhmaR4pYG_dx_wcqqYcJQ0Z14q-ICbhNM-lwivQpiYcoRyVrtUcOMHzwZEnxxdJDw834_vvotj_P19-zuAZliLBRMh5aKAjrpGRtz8naa6QZdiQEu1mMBpVFo3-GFSX0o3_S6cZtUXm1N",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuB9wgAYEO-wYJgLjfNyursCLlTXzZTm0-SvSoTcZARHnixxjTFLkXFZ-HyFSonW2--WLpDIMsCvxP4Mv7YnmHM4GxkVU7JDiyE6nF5KbE5D0dcyQZBOOaxFUZtu_Skv2Xtj-cjByLaagJMis2Sa9yxZ_Qz6gBdjBhm4p-kpsdbXXhA_GprX-ILEm7zxazsDb1bXYsI4yb6_lApS44tYCK_5fTLS45tQBXI7wu3BYhq0_9tR0Oi4MkMV-sZwHBVS8f9VxN9iXAvIIKwV",
-];
-
-function Container({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`max-w-7xl mx-auto px-4 sm:px-6 ${className}`}>{children}</div>;
-}
-
-function Header() {
-  const router = useRouter();
-  return (
-    <header className="w-full bg-bg-primary border-b border-border-lighter">
-      <Container className="py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Image src="/assets/images/logoCompleto.png" alt="Bora Entender Logo" width={105} height={50} />
-        </div>
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              className="text-text-primary hover:text-primary font-medium text-sm transition-colors"
-              href={link.href}
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-        <div className="flex items-center gap-3 sm:gap-4">
-          <a className="text-text-primary font-bold text-sm hover:text-primary transition-colors" href="/login">
-            Login
-          </a>
-          <Botao variant="secondary" size="sm" onClick={() => router.push("/cadastroAluno")}>
-            Criar conta
-          </Botao>
-        </div>
-      </Container>
-    </header>
-  );
-}
 
 function Hero() {
   return (
     <section className="w-full bg-bg-primary py-12 lg:py-20">
-      <Container>
+      <PublicContainer>
         <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
           <div className="flex flex-col gap-6 flex-1 text-center lg:text-left">
             <h1 className="font-heading text-primary text-4xl sm:text-5xl lg:text-[64px] font-bold leading-[1.1] tracking-tight">
-              Aprender nunca foi tão divertido
+              Entender nunca foi tão simples
             </h1>
-            <p className="text-text-secondary text-lg sm:text-xl leading-relaxed max-w-150 mx-auto lg:mx-0">
-              A plataforma que fala a sua língua. Domine as matérias da escola de um jeito simples, rápido e sem
-              complicação.
+            <p className="text-black text-lg sm:text-xl leading-relaxed max-w-160 mx-auto lg:mx-0">
+              A plataforma que fala a sua língua. Com um ensino de aluno para aluno, domine as matérias da escola de
+              um jeito simples, rápido e sem complicações.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <Botao variant="secondary" size="lg" rightIcon={ArrowRight} fullWidth className="sm:w-auto">
-                Começar agora
-              </Botao>
-              <Botao variant="primary" size="lg" fullWidth className="sm:w-auto">
-                Ver cursos
-              </Botao>
+              <Link href="/cadastroAluno" className="sm:w-auto w-full">
+                <Botao variant="secondary" size="lg" rightIcon={ArrowRight} fullWidth className="sm:w-auto">
+                  Começar agora
+                </Botao>
+              </Link>
+              <Link href="/precos" className="sm:w-auto w-full">
+                <Botao variant="primary" size="lg" fullWidth className="sm:w-auto">
+                  Ver planos
+                </Botao>
+              </Link>
             </div>
-            <div className="flex items-center justify-center lg:justify-start gap-4 pt-4">
-              <div className="flex -space-x-3">
-                {avatars.map((src, index) => (
-                  <div
-                    key={src}
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white bg-gray-200 bg-cover"
-                    style={{ backgroundImage: `url('${src}')`, zIndex: 10 - index }}
-                  />
-                ))}
+
+            {showConnectedStudents && (
+              <div className="flex items-center justify-center lg:justify-start gap-3 pt-4">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <p className="text-sm font-semibold text-text-secondary">+2.000 alunos conectados</p>
               </div>
-              <p className="text-sm font-medium text-text-secondary">+2.000 alunos conectados</p>
-            </div>
+            )}
           </div>
 
-          <div className="flex-1 w-full max-w-150 lg:max-w-none">
+          <div className="flex-1 w-full max-w-160 lg:max-w-none">
             <div
-              className="aspect-square lg:aspect-4/3 w-full rounded-lg bg-cover bg-center overflow-hidden"
+              className="aspect-square lg:aspect-4/3 w-full rounded-2xl bg-cover bg-center overflow-hidden shadow-lg"
               style={{
                 backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCq1tm0SeDcF2YD8gquJ9BPaazs0Y8H-wHstqBjv_o3flMDVuPsVvuFVPzs5o3vwvcfAhmVdYiop17xzaV-MWuJKgGNtZjkhjUPAyyEj2Wj3kDkenszZu7lGnA2upmEtzXS6xXabbYtobSrjr4MnGjiPQh1chpXtWE_guk5G7hlKtrz6dc2A1bHzbLmWH6ytBrW3nvrdZvkstr8S5WseWcimWbq74ksHGSpXUgBwp9hDnQo67qzR2kZ-xN7CB0tRK_0U3nC_c-lII0W')",
+                  "url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1600&q=80')",
               }}
             />
           </div>
         </div>
-      </Container>
+      </PublicContainer>
     </section>
+  );
+}
+
+function FeatureColumn({
+  title,
+  subtitle,
+  items,
+}: {
+  title: string;
+  subtitle: string;
+  items: typeof studentFeatures;
+}) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h3 className="font-heading text-2xl font-bold text-text-primary mb-2">{title}</h3>
+        <p className="text-text-secondary">{subtitle}</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {items.map(({ title: itemTitle, description, icon: Icon }) => (
+          <div key={itemTitle} className="flex flex-col bg-white/80 p-5 rounded-xl border border-[#f5c9a8] shadow-sm md:h-60 h-full">
+            <div className="w-11 h-11 bg-brand-red/10 rounded-lg flex items-center justify-center text-brand-red mb-4 shrink-0">
+              <Icon className="h-6 w-6" />
+            </div>
+            <h4 className="text-base font-bold text-text-primary mb-2">{itemTitle}</h4>
+            <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
 function Features() {
   return (
-    <section className="w-full bg-bg-quaternary py-16 lg:py-24">
-      <Container>
+    <section className="w-full bg-[#feede0] py-16 lg:py-24">
+      <PublicContainer>
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-text-primary font-heading text-3xl sm:text-4xl font-bold mb-4">
-            Tudo o que você precisa
+            Entendemos suas necessidades e entregamos a solução
           </h2>
-          <p className="text-text-secondary text-lg max-w-2xl mx-auto">
-            Metodologia focada em quem quer aprender sem complicação e do seu jeito.
+          <p className="text-text-secondary text-lg max-w-3xl mx-auto">
+            Metodologia e infraestrutura focada em quem quer aprender sem complicação e do seu jeito.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {features.map(({ title, description, icon: Icon }) => (
-            <div
-              key={title}
-              className="bg-white p-6 sm:p-8 rounded-lg border-2 border-transparent hover:border-primary transition-colors duration-300"
-            >
-              <div className="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-6">
-                <Icon className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-bold text-text-primary mb-3">{title}</h3>
-              <p className="text-text-secondary leading-relaxed">{description}</p>
-            </div>
-          ))}
+
+        <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
+          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-[#f5c9a8] -translate-x-1/2" />
+
+          <FeatureColumn
+            title="Para alunos"
+            subtitle="Foco total no aprendizado com ritmo leve e evolução constante."
+            items={studentFeatures}
+          />
+
+          <FeatureColumn
+            title="Para pais"
+            subtitle="Transparência e apoio para acompanhar cada etapa do desenvolvimento."
+            items={parentsFeatures}
+          />
         </div>
-      </Container>
+      </PublicContainer>
     </section>
   );
 }
@@ -172,58 +180,47 @@ function Features() {
 function CallToAction() {
   return (
     <section className="w-full bg-bg-primary py-16 lg:py-24">
-      <Container>
+      <PublicContainer>
         <div className="bg-primary/10 rounded-lg p-8 sm:p-10 lg:p-16 flex flex-col items-center text-center">
           <h2 className="font-heading text-primary text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 max-w-3xl">
-            Pronto para melhorar suas notas?
+            Pronto para entender as matérias de verdade?
           </h2>
           <p className="text-text-primary text-lg mb-10 max-w-2xl">
-            Junte-se a milhares de estudantes que já estão aprendendo com a gente e descubra que estudar não precisa ser
-            chato.
+            Temos planos para diferentes perfis de alunos e famílias, com uma jornada clara para aprender no seu
+            ritmo.
           </p>
-          <Botao variant="secondary" size="lg" rightIcon={ArrowRight}>
-            Criar conta grátis
-          </Botao>
+
+          <Link href="/precos">
+            <Botao variant="secondary" size="lg" rightIcon={ArrowRight}>
+              Nossos planos
+            </Botao>
+          </Link>
         </div>
-      </Container>
+      </PublicContainer>
     </section>
   );
 }
 
-function Footer() {
+function WelcomeStrip() {
   return (
-    <footer className="w-full bg-bg-primary border-t border-border-lighter pt-12 sm:pt-16 pb-8">
-      <Container>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-10 sm:mb-12">
-          <div className="col-span-2 lg:col-span-2 flex flex-col gap-4 pr-0 lg:pr-8">
-            <div className="flex items-center gap-2 text-primary">
-              <GraduationCap className="h-7 w-7" />
-              <span className="font-bold text-xl text-text-primary">Bora Entender</span>
-            </div>
-            <p className="text-text-secondary text-sm leading-relaxed max-w-xs">
-              A plataforma de estudos feita para você. Simples, direta e divertida.
-            </p>
+    <section className="bg-bg-primary py-8">
+      <PublicContainer>
+        <div className="grid sm:grid-cols-3 gap-4">
+          <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
+            <CheckCircle className="w-5 h-5 text-primary-alt" />
+            <span className="font-medium text-text-primary">Trilhas por matéria e nível escolar</span>
           </div>
-          {footerColumns.map((column) => (
-            <div key={column.title} className="flex flex-col gap-3 sm:gap-4">
-              <h4 className="font-bold text-text-primary">{column.title}</h4>
-              {column.links.map((link) => (
-                <a
-                  key={link}
-                  className="text-text-secondary hover:text-primary text-sm transition-colors"
-                  href="#"
-                >
-                  {link}
-                </a>
-              ))}
-            </div>
-          ))}
+          <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
+            <Smile className="w-5 h-5 text-primary" />
+            <span className="font-medium text-text-primary">Didática simples e linguagem direta</span>
+          </div>
+          <div className="bg-bg-tertiary rounded-xl p-4 flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-brand-red" />
+            <span className="font-medium text-text-primary">Aprendizado leve, prático e contínuo</span>
+          </div>
         </div>
-        <div className="pt-8 border-t border-border-lighter text-center">
-          <p className="text-text-secondary text-sm">© 2026 Bora Entender. Todos os direitos reservados.</p>
-        </div>
-      </Container>
-    </footer>
+      </PublicContainer>
+    </section>
   );
 }
 
@@ -231,11 +228,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary font-display antialiased overflow-x-hidden">
       <div className="relative flex min-h-screen w-full flex-col">
-        <Header />
+        <PublicHeader />
         <Hero />
+        <WelcomeStrip />
         <Features />
         <CallToAction />
-        <Footer />
+        <PublicFooter />
       </div>
     </div>
   );
