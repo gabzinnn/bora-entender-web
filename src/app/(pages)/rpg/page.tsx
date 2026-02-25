@@ -228,7 +228,17 @@ class RPGScene extends Phaser.Scene {
 
         // Particle Star
         graphics.fillStyle(0xfde047);
-        graphics.fillStar(8, 8, 5, 4, 8);
+        graphics.beginPath();
+        for (let i = 0; i < 10; i++) {
+            const r = i % 2 === 0 ? 8 : 4;
+            const a = (i * Math.PI) / 5 - Math.PI / 2;
+            const px = 8 + Math.cos(a) * r;
+            const py = 8 + Math.sin(a) * r;
+            if (i === 0) graphics.moveTo(px, py);
+            else graphics.lineTo(px, py);
+        }
+        graphics.closePath();
+        graphics.fillPath();
         graphics.generateTexture('starParticle', 16, 16);
         graphics.clear();
 
@@ -542,7 +552,7 @@ export default function RPGModePhaser() {
                 <Link href="/" className="flex items-center text-slate-400 hover:text-white transition group bg-slate-800/50 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-700/50">
                     <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" /> Retornar à Tela Padrão
                 </Link>
-                <div className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-2 rounded-full shadow-lg shadow-indigo-500/20 border border-indigo-400/30">
+                <div className="flex items-center bg-linear-to-r from-indigo-500 to-purple-600 px-6 py-2 rounded-full shadow-lg shadow-indigo-500/20 border border-indigo-400/30">
                     <Shield className="w-5 h-5 mr-3 text-white" />
                     <h1 className="text-xl font-bold tracking-wide">Cloud Quest: Aventura do Saber</h1>
                 </div>
@@ -578,12 +588,12 @@ export default function RPGModePhaser() {
                 <div className="xl:col-span-1 flex flex-col space-y-6 overflow-y-auto pr-2 custom-scrollbar">
 
                     {/* Player Stats Card */}
-                    <div className="bg-gradient-to-b from-slate-800 to-slate-800/80 p-6 rounded-3xl border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div className="bg-linear-to-b from-slate-800 to-slate-800/80 p-6 rounded-3xl border border-slate-700 shadow-xl relative overflow-hidden">
                         {/* Decorative background glow */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
                         <div className="flex items-center mb-6">
-                            <div className="w-14 h-14 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mr-4">
+                            <div className="w-14 h-14 bg-linear-to-br from-indigo-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mr-4">
                                 <User className="w-8 h-8 text-white -rotate-3" />
                             </div>
                             <div>
@@ -602,7 +612,7 @@ export default function RPGModePhaser() {
                                     <span className={stats.hp < 30 ? "text-rose-400" : ""}>{stats.hp} / 100</span>
                                 </div>
                                 <div className="w-full bg-slate-900 rounded-full h-3 shadow-inner">
-                                    <div className={`h-3 rounded-full transition-all duration-300 ${stats.hp < 30 ? 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)] animate-pulse' : 'bg-gradient-to-r from-emerald-500 to-emerald-400'}`} style={{ width: `${stats.hp}%` }}></div>
+                                    <div className={`h-3 rounded-full transition-all duration-300 ${stats.hp < 30 ? 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)] animate-pulse' : 'bg-linear-to-r from-emerald-500 to-emerald-400'}`} style={{ width: `${stats.hp}%` }}></div>
                                 </div>
                             </div>
 
@@ -614,34 +624,34 @@ export default function RPGModePhaser() {
                                 </div>
                                 <div className="w-full bg-slate-900 rounded-full h-3 shadow-inner relative overflow-hidden">
                                     <div className="absolute inset-0 bg-indigo-500/20 w-full animate-pulse"></div>
-                                    <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full relative z-10 transition-all duration-700 ease-out" style={{ width: `${Math.min(100, (stats.xp / (stats.level * 100)) * 100)}%` }}></div>
+                                    <div className="bg-linear-to-r from-indigo-500 to-purple-500 h-3 rounded-full relative z-10 transition-all duration-700 ease-out" style={{ width: `${Math.min(100, (stats.xp / (stats.level * 100)) * 100)}%` }}></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Guild Leaderboard */}
-                    <div className="bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl flex-grow flex flex-col">
+                    <div className="bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl grow flex flex-col">
                         <h2 className="text-lg font-bold mb-5 flex items-center tracking-wide">
                             <Trophy className="w-5 h-5 mr-3 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
                             Territórios de Guilda
                         </h2>
 
-                        <div className="space-y-4 flex-grow">
+                        <div className="space-y-4 grow">
                             {leaderboard.map((item, index) => (
                                 <div
                                     key={index}
                                     className={`relative overflow-hidden flex items-center justify-between p-4 rounded-2xl transition-all duration-300 ${item.name === "Sua Escola"
-                                            ? "bg-gradient-to-r from-indigo-600/40 to-indigo-900/40 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] ring-1 ring-indigo-500/20 hover:-translate-y-1"
-                                            : "bg-slate-900/60 border border-transparent hover:border-slate-700 hover:bg-slate-800/80"
+                                        ? "bg-linear-to-r from-indigo-600/40 to-indigo-900/40 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] ring-1 ring-indigo-500/20 hover:-translate-y-1"
+                                        : "bg-slate-900/60 border border-transparent hover:border-slate-700 hover:bg-slate-800/80"
                                         }`}
                                 >
                                     {/* Rank Badge */}
                                     <div className="flex items-center">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4 shadow-inner ${index === 0 ? "bg-gradient-to-br from-yellow-300 to-yellow-600 text-yellow-900" :
-                                                index === 1 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-slate-900" :
-                                                    index === 2 ? "bg-gradient-to-br from-amber-600 to-amber-800 text-amber-50" :
-                                                        "bg-slate-800 text-slate-400"
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-4 shadow-inner ${index === 0 ? "bg-linear-to-br from-yellow-300 to-yellow-600 text-yellow-900" :
+                                            index === 1 ? "bg-linear-to-br from-slate-300 to-slate-500 text-slate-900" :
+                                                index === 2 ? "bg-linear-to-br from-amber-600 to-amber-800 text-amber-50" :
+                                                    "bg-slate-800 text-slate-400"
                                             }`}>
                                             #{index + 1}
                                         </div>
@@ -670,11 +680,11 @@ export default function RPGModePhaser() {
 
             {/* INTERACTIVE RPG MODAL (GLASSMORPHISM) */}
             {interactionModal && (
-                <div id="rpg-modal" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[100] p-6 animate-in fade-in duration-300">
+                <div id="rpg-modal" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-100 p-6 animate-in fade-in duration-300">
                     <div className="bg-slate-900/90 border border-slate-700/60 p-8 md:p-10 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.6)] max-w-2xl w-full transform scale-100 animate-in zoom-in-95 duration-300 ring-1 ring-white/10 relative overflow-hidden">
 
                         {/* Modal Header Decoration */}
-                        <div className={`absolute top-0 left-0 w-full h-2 ${interactionModal.type === 'npc' ? 'bg-gradient-to-r from-purple-500 to-indigo-500' : 'bg-gradient-to-r from-amber-500 to-red-500'}`}></div>
+                        <div className={`absolute top-0 left-0 w-full h-2 ${interactionModal.type === 'npc' ? 'bg-linear-to-r from-purple-500 to-indigo-500' : 'bg-linear-to-r from-amber-500 to-red-500'}`}></div>
 
                         <div className="flex items-start justify-between mb-8">
                             <div>
@@ -712,7 +722,7 @@ export default function RPGModePhaser() {
                                             key={i}
                                             onClick={() => handleAnswerSubmit(i)}
                                             // Complex hover/active states for that premium feel
-                                            className="group relative px-6 py-5 bg-gradient-to-b from-slate-800 to-slate-900 hover:from-indigo-600 hover:to-indigo-700 border border-slate-700 hover:border-indigo-400 rounded-2xl transition-all duration-200 text-left font-medium text-lg text-slate-200 hover:text-white hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(79,70,229,0.3)] overflow-hidden"
+                                            className="group relative px-6 py-5 bg-linear-to-b from-slate-800 to-slate-900 hover:from-indigo-600 hover:to-indigo-700 border border-slate-700 hover:border-indigo-400 rounded-2xl transition-all duration-200 text-left font-medium text-lg text-slate-200 hover:text-white hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(79,70,229,0.3)] overflow-hidden"
                                         >
                                             <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-slate-600 group-hover:bg-indigo-300 transition-colors"></span>
                                             <span className="ml-2 relative z-10">{String.fromCharCode(65 + i)}) {opt}</span>
