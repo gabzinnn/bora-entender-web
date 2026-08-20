@@ -23,6 +23,7 @@ const validationSchema = Yup.object().shape({
     DT_nascimento: Yup.date().required("A data de nascimento é obrigatória"),
     nivelEnsino: Yup.string().required("O nível de ensino é obrigatório"),
     anoEscolar: Yup.number().required("O ano escolar é obrigatório").min(1, "Ano escolar inválido").max(12, "Ano escolar inválido"),
+    escola: Yup.string().required("A escola é obrigatória"),
 });
 
 export default function CadastroAluno() {
@@ -35,6 +36,7 @@ export default function CadastroAluno() {
         email: "",
         senha: "",
         anoEscolar: "",
+        escola: "",
         nivelEnsino: "",
         DT_nascimento: "",
     }
@@ -44,6 +46,7 @@ export default function CadastroAluno() {
         try {
             const response = await api.post("/aluno", {
                 anoEscolar: Number(values.anoEscolar),
+                escola: values.escola,
                 nivelEnsino: values.nivelEnsino,
                 DT_nascimento: new Date(values.DT_nascimento),
                 dados_usuario: {
@@ -146,7 +149,17 @@ export default function CadastroAluno() {
                             error={touched.anoEscolar ? errors.anoEscolar : undefined}
                             helperText="Digite o ano que você está cursando"
                         />
-                        
+                        <Input
+                            label="Escola"
+                            name="escola"
+                            placeholder="Nome da escola"
+                            value={values.escola}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            touched={touched.escola}
+                            error={touched.escola ? errors.escola : undefined}
+                        />
+
                         <Botao
                             variant="primary"
                             type="submit"
